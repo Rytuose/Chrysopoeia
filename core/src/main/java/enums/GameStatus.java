@@ -2,8 +2,8 @@ package enums;
 
 public enum GameStatus {
 	PLAYING,
+	PROMPTING,
 	QUESTING,
-	SELECTING,
 	UPGRADING;
 	
 	public static GameStatus gamestatus;

@@ -33,6 +33,7 @@ public class Deck {
 		refreshCard.addSymbol(Symbol.REFRESH4, Location.CENTER);
 		refreshCard.addSymbol(Symbol.RETURN, Location.CENTER);
 		refreshCard.addSymbol(Symbol.UPGRADE, Location.CENTER);
+		refreshCard.addSymbol(Symbol.UPGRADE, Location.CENTER);
 //		refreshCard.addSymbol(Symbol.UPGRADE1, Location.CENTER);
 //		refreshCard.addSymbol(Symbol.UPGRADE2, Location.CENTER);
 //		refreshCard.addSymbol(Symbol.UPGRADE3, Location.CENTER);

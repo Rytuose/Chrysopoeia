@@ -57,7 +57,12 @@ private boolean isFirst;
 		super.touchUp(event, x, y, pointer, button);
 		if(card.getStage() instanceof GameRenderer) {
 			isFirst = !isFirst;
-			if(!isFirst) {
+			
+			if(GameStatus.gamestatus == GameStatus.PROMPTING && isOver()) {
+				card.recievePrompt();
+				//System.out.println("Release");
+			}
+			else if(!isFirst) {
 				card.release(); //handles click-drag interactions
 				isFirst = false;
 			}
@@ -97,6 +102,8 @@ private boolean isFirst;
 	 * Passes what is considered a click to the card
 	 */
 	private void click() {
+		
+		System.out.println("click");
 		
 		if((!card.getActions().contains(ra, false) && GameStatus.gamestatus == GameStatus.PLAYING)) {
 			

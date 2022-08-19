@@ -167,7 +167,6 @@ public class Card extends GameActor {
 			}
 		}
 		
-		
 		if(gameRenderer.getClickedActor() != null) {
 			gameRenderer.getClickedActor().clearActions();
 		}
@@ -175,8 +174,11 @@ public class Card extends GameActor {
 		this.clearActions();
 		gameRenderer.removeClickedActor(this);
 		gameRenderer.removeHoverActor(this);
+		
 		gameRenderer.setHandInteractable(true);
 		gameRenderer.setHand();
+
+		
 		cardListener.resetIsFirst();
 	}
 	
@@ -230,6 +232,8 @@ public class Card extends GameActor {
 	}
 	
 	public int getLevel() {return level;}
+	
+	public void recievePrompt() {gameRenderer.finishPrompt(this);}
 	
 	public ArrayList<Symbol> getInput(){return input;}
 	

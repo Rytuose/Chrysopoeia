@@ -3,6 +3,7 @@ package core.mygdx.game;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -29,6 +30,8 @@ import enums.Symbol;
 public class GameRenderer extends Stage {
 
 	private int turnCounter;
+	private LinkedList<Symbol> symbolQueue;
+	private Symbol promptSymbol;
 	private GameActor clickedActor, hoverActor;
 	private Deck deck;
 	private Hand hand;
@@ -49,6 +52,8 @@ public class GameRenderer extends Stage {
 		deck = new Deck(this,game);
 		
 		hand = new Hand(this,deck);
+		
+		symbolQueue = new LinkedList<Symbol>();
 		
 		upgradeWindow = new UpgradeWindow(this,deck);
 		this.addActor(upgradeWindow);
@@ -237,6 +242,8 @@ public class GameRenderer extends Stage {
 		hand.setHand();
 		hand.setHandInteractable(true);
 		
+		processSymbolQueue();
+		
 		turnCounter++;
 		
 		return false;
@@ -244,16 +251,20 @@ public class GameRenderer extends Stage {
 	
 	private void add(StorageContainer container, ArrayList<Symbol> list) {
 		for(Symbol symbol: list) {
-			if(symbol.getValue() < 0) {
-				applyEffect(symbol);
+			if(symbol.getValue() >= 0) {
+				container.addStorage(symbol);	
+			}
+			else if (symbol.getValue() == -1) {
+				applySymbol(symbol);
 			}
 			else {
-				container.addStorage(symbol);
+				symbolQueue.add(symbol);
 			}
 		}
 	}
 	
-	private void applyEffect(Symbol symbol) {
+	private void applySymbol(Symbol symbol) {
+		System.out.println("Applying symbol " + symbol);
 		switch(symbol) {
 		case REFRESH4:
 			hand.drawStartingHand(4);
@@ -264,14 +275,54 @@ public class GameRenderer extends Stage {
 		case RETURN:
 			//Do nothing
 			break;
-		case UPGRADE:
-			startUpgrade();
-			break;
 		default:
 			break;
 		}
 	}
 	
+	private void processSymbolQueue() {
+		if(symbolQueue.isEmpty()) {
+			GameStatus.gamestatus = GameStatus.PLAYING;
+			return;
+		}
+		Symbol nextSymbol = symbolQueue.pop();
+		switch(nextSymbol) {
+		case DISCARD:
+			if(hand.size() > 1) {
+				startPrompt(nextSymbol);
+				hand.toFront();
+			}
+			break;
+		case UPGRADE:
+			startUpgrade();
+			break;
+		default:
+			processSymbolQueue();
+			break;
+		}
+	}
+	
+	private void startPrompt(Symbol symbol) {
+		GameStatus.gamestatus = GameStatus.PROMPTING;
+		promptSymbol = symbol;
+		transparentLayer.setVisible(true);
+	}
+	
+	public void finishPrompt(GameActor ga) {
+		transparentLayer.setVisible(false);
+		switch(promptSymbol) {
+		case DISCARD:
+			hand.discardCard((Card)ga);
+			GameStatus.gamestatus = GameStatus.PLAYING;
+			hand.setHand();
+			break;
+		default:
+			break;
+		}
+		promptSymbol = Symbol.NONE; //Just in case
+		processSymbolQueue();
+	}
+
 	private void startUpgrade() {
 		GameStatus.gamestatus = GameStatus.UPGRADING;
 		transparentLayer.setVisible(true);
@@ -286,7 +337,8 @@ public class GameRenderer extends Stage {
 		transparentLayer.setVisible(false);
 		upgradeWindow.setVisible(false);
 		viewButton.setVisible(false);
-		GameStatus.gamestatus = GameStatus.PLAYING;
+		processSymbolQueue();
+		//GameStatus.gamestatus = GameStatus.PLAYING;
 	}
 	
 

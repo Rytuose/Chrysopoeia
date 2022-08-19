@@ -42,11 +42,11 @@ public class UpgradeManager {
 		if(c.getCenterOutput().contains(Symbol.REFRESH4) || c.getCenterOutput().contains(Symbol.REFRESH5)) {
 			return CardType.REDRAW;
 		}
-		else if (c.getInput().isEmpty()) {
-			return CardType.PRODUCTION;
-		}
 		else if(c.getCenterOutput().contains(Symbol.UPGRADE)) {
 			return CardType.UPGRADE;
+		}
+		else if (c.getInput().isEmpty()) {
+			return CardType.PRODUCTION;
 		}
 		else {
 			return CardType.TRADE;

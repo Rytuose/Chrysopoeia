@@ -4,22 +4,29 @@ package enums;
  * >=0, can be in a container
  * <0, symbol on card*/
 public enum Symbol {
+	//Empty Symbols
 	NONE(-1),
+	
+	//Applied Automatically
 	RETURN(-1),
 	REFRESH4(-1),
 	REFRESH5(-1),
-	DISCARD(-1),
-	UPGRADE(-1),
-	UPGRADE1(-1),
-	UPGRADE2(-1),
-	UPGRADE3(-1),
+	
+	//Symbols Added
 	LEAD(1),
 	LEAD_OR_COPPER(-1),
 	COPPER(2),
 	COPPER_OR_SILVER(-1),
 	SILVER(3),
 	SILVER_OR_GOLD(-1),
-	GOLD(4);
+	GOLD(4),
+	
+	//Effects that require prompts
+	DISCARD(-2),
+	UPGRADE(-2),
+	UPGRADE1(-2),
+	UPGRADE2(-2),
+	UPGRADE3(-2);
 
 	
 	private final int value;
