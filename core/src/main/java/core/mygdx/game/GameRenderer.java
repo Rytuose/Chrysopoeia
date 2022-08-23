@@ -1,9 +1,12 @@
 package core.mygdx.game;
 
 import java.util.ArrayList;
+
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import core.mygdx.game.Button;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -15,7 +18,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -29,6 +31,7 @@ import enums.Symbol;
 
 public class GameRenderer extends Stage {
 
+	private Button confirmButton;
 	private int turnCounter;
 	private LinkedList<Symbol> symbolQueue;
 	private Symbol promptSymbol;
@@ -36,6 +39,7 @@ public class GameRenderer extends Stage {
 	private Deck deck;
 	private Hand hand;
 	private MyGdxGame game;
+	private StorageContainer currentContainer;
 	private StorageContainer[] storageContainers;
 	private Image transparentLayer;
 	private QuestViewer questViewer;
@@ -91,6 +95,23 @@ public class GameRenderer extends Stage {
 		transparentLayer.setSize(this.getWidth(), this.getHeight());
 		this.addActor(transparentLayer);
 		transparentLayer.setVisible(false);
+		
+		confirmButton = new Button(new Texture(Gdx.files.classpath("UncommonCard.png")),
+				new Texture(Gdx.files.classpath("BasicCard.png"))) {
+			@Override
+			public void click() {
+				GameRenderer.this.finishPrompt(confirmButton);
+			}
+			
+		};
+		
+		this.addActor(confirmButton);
+		confirmButton.setBounds(this.getWidth() - Constants.confirmButtonXGap - Constants.confirmButtonWidth,
+				Constants.confirmButtonYGap, 
+				Constants.confirmButtonWidth, Constants.confirmButtonHeight);
+		confirmButton.setVisible(false);
+		
+		
 
 //
 //		Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
@@ -185,6 +206,7 @@ public class GameRenderer extends Stage {
 	
 	public boolean play(Card card, StorageContainer destination) {
 		clickedActor = null;
+		currentContainer = destination;
 		
 		//Play the actual card
 		ArrayList<Symbol> requirements,storage;
@@ -213,8 +235,6 @@ public class GameRenderer extends Stage {
 				}
 			}
 		}
-		
-		
 		
 		add(destination,card.getCenterOutput());
 		
@@ -293,8 +313,23 @@ public class GameRenderer extends Stage {
 				hand.toFront();
 			}
 			break;
-		case UPGRADE:
-			startUpgrade();
+		case MOVE_LEFT:
+			//Intentionally Left Blank (Pun not intended)
+		case MOVE_RIGHT:
+			startPrompt(nextSymbol);
+			currentContainer.toFront();
+			currentContainer.updateSymbols();
+			confirmButton.setVisible(true);
+			confirmButton.toFront();
+			break;
+		case UPGRADE1:
+			startUpgrade(1);
+			break;
+		case UPGRADE2:
+			startUpgrade(2);
+			break;
+		case UPGRADE3:
+			startUpgrade(3);
 			break;
 		default:
 			processSymbolQueue();
@@ -310,11 +345,34 @@ public class GameRenderer extends Stage {
 	
 	public void finishPrompt(GameActor ga) {
 		transparentLayer.setVisible(false);
+		confirmButton.setVisible(false);
 		switch(promptSymbol) {
 		case DISCARD:
 			hand.discardCard((Card)ga);
 			GameStatus.gamestatus = GameStatus.PLAYING;
 			hand.setHand();
+			break;
+		case MOVE_LEFT:
+			StorageContainer leftContainer = this.getLeftContainer(currentContainer);
+			if(leftContainer != null) {
+				for(Symbol s: currentContainer.getSelected()) {
+					leftContainer.addStorage(s);
+				}
+			}
+			currentContainer.processSelected();
+			GameStatus.gamestatus = GameStatus.PLAYING;
+			currentContainer.updateSymbols();
+			break;
+		case MOVE_RIGHT:
+			StorageContainer rightContainer = this.getRightContainer(currentContainer);
+			if(rightContainer != null) {
+				for(Symbol s: currentContainer.getSelected()) {
+					rightContainer.addStorage(s);
+				}
+			}
+			currentContainer.processSelected();
+			GameStatus.gamestatus = GameStatus.PLAYING;
+			currentContainer.updateSymbols();
 			break;
 		default:
 			break;
@@ -323,12 +381,12 @@ public class GameRenderer extends Stage {
 		processSymbolQueue();
 	}
 
-	private void startUpgrade() {
+	private void startUpgrade(int level) {
 		GameStatus.gamestatus = GameStatus.UPGRADING;
 		transparentLayer.setVisible(true);
 		upgradeWindow.toFront();
 		upgradeWindow.setVisible(true);
-		upgradeWindow.setOptions();
+		upgradeWindow.setOptions(level);
 		viewButton.setVisible(true);
 		viewButton.toFront();
 	}

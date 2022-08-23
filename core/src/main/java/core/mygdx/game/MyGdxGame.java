@@ -80,6 +80,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void resize(int width, int height) {
 		super.resize(width, height);
 		gameRenderer.resize(width,height);
+		deckRenderer.resize(width, height);
 		System.out.println("Resizing to " + Gdx.graphics.getWidth() + " " + Gdx.graphics.getHeight());
 	}
 	

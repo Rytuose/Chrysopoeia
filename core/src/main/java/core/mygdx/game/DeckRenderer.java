@@ -13,6 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -27,6 +29,7 @@ public class DeckRenderer extends Stage {
 	private Image transparentLayer;
 	private Card viewingCard;
 	private Sprite viewingSprite;
+	private ScrollBar scrollBar;
 	
 	public DeckRenderer(MyGdxGame g) {
 		super(new FitViewport(Constants.game_width,Constants.game_height,new OrthographicCamera()));
@@ -34,6 +37,8 @@ public class DeckRenderer extends Stage {
 		activeCardHolders = new LinkedList<CardHolder>();
 		viewingSprite = new Sprite();
 		
+		scrollBar = new ScrollBar(this);
+		this.addActor(scrollBar);
 		
 		exitButton = new Button(new Texture(Gdx.files.classpath("CommonCard.png")),
 				new Texture(Gdx.files.classpath("RareCard.png"))) {
@@ -72,6 +77,18 @@ public class DeckRenderer extends Stage {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 				super.touchUp(event, x, y, pointer, button);
 				viewCard(null);
+			}
+		});
+		
+		this.addListener(new ClickListener() {
+			@Override
+			public boolean scrolled(InputEvent event, float x, float y, float amountX, float amountY) {
+				super.scrolled(event, x, y, amountX, amountY);
+				if(!transparentLayer.isVisible()) {
+					System.out.println("scrolled");
+					updateCamera( -50 * amountY);
+				}
+				return true;
 			}
 		});
 		
@@ -133,14 +150,19 @@ public class DeckRenderer extends Stage {
 			ch.toFront(); 
 			
 		}
-//		lowestY = (int) (Constants.game_height - Constants.menuBarHeight - (deck.deckListSize()/maxCards * 
-//				(Constants.deckRendererCardHeight + Constants.deckRendererCardGap) + Constants.deckRendererCardGap));
-//		if(deck.deckListSize()%maxCards > 0) {
-//			lowestY -= Constants.deckRendererCardHeight + Constants.deckRendererCardGap;
-//		}
-//		if(lowestY > 0) {
-//			lowestY = 0;
-//		}
+		lowestY = (int) (Constants.game_height - (ctd.size()/maxCards * 
+				(Constants.deckRendererCardHeight + Constants.deckRendererCardGap) + Constants.deckRendererTopGap));
+		if(ctd.size()%maxCards > 0) {
+			lowestY -= Constants.deckRendererCardHeight + Constants.deckRendererCardGap;
+		}
+		if(lowestY > 0) {
+			lowestY = 0;
+		}
+		
+		this.getCamera().position.y = this.getCamera().viewportHeight/2;
+		exitButton.setPosition(exitButton.getX(),
+				this.getHeight() - Constants.deckExitButtonYGap - Constants.deckExitButtonHeight);
+		scrollBar.resizeScrollBar((int) (this.getCamera().viewportHeight - lowestY));
 	}
 	
 	public void viewCard(Card card) {
@@ -148,7 +170,6 @@ public class DeckRenderer extends Stage {
 		if(viewingCard == null) {
 			transparentLayer.toBack();
 			transparentLayer.setVisible(false);
-			
 		}
 		else {
 			float viewX = (Constants.game_width - Constants.deckRendererViewingCardWidth)/2;
@@ -159,9 +180,39 @@ public class DeckRenderer extends Stage {
 					Constants.deckRendererViewingCardWidth, Constants.deckRendererViewingCardHeight);
 			transparentLayer.toFront();
 			transparentLayer.setVisible(true);
+			transparentLayer.setPosition(transparentLayer.getX(),
+					this.getCamera().position.y - this.getCamera().viewportHeight/2);
 		}
 		
 	}
+	
+	public void updateCamera(float deltaY) {
+		
+		//float deltaY = - y * 50;
+		//yPos += y;
+		
+		System.out.println("DeltaY " + deltaY + " LowestY " + lowestY);
+		
+		if (this.getCamera().position.y + deltaY > this.getViewport().getWorldHeight() - this.getCamera().viewportHeight/2) {
+			System.out.println("stop scroll up");
+			deltaY += this.getViewport().getWorldHeight() - this.getCamera().viewportHeight/2 - (this.getCamera().position.y + deltaY);
+		}
+		else if (this.getCamera().position.y + deltaY < lowestY + this.getCamera().viewportHeight/2) {
+			System.out.println("stop scroll down");
+			deltaY += lowestY + this.getCamera().viewportHeight/2 - (this.getCamera().position.y + deltaY);
+		}
+		
+
+		
+		this.getCamera().translate(0, deltaY,0);
+		
+		exitButton.setPosition(exitButton.getX(), exitButton.getY() + deltaY);
+		scrollBar.setScrollBar(deltaY);
+		
+		//setExitButton();
+	}
+	
+	public void resize(int width, int height) {this.getViewport().update(width,height,true);}
 	
 	
 }

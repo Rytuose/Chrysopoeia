@@ -86,13 +86,8 @@ public class Hand {
 				}
 			}
 		}
-
-		
-		System.out.println("StartZ is " + startZ);
 		
 		for (int i = hand.size()-1; i >=0; i--/*int i = 0; i<hand.size();i++*/) {
-			
-			System.out.println("Card " + i + " Z " + (startZ+i));
 			
 			c = hand.get(i);
 			
@@ -142,12 +137,9 @@ public class Hand {
 	public void removeCard(Card c) {hand.remove(c);}
 	
 	public void toFront() {
-		System.out.println("Hand is at front");
 		for(int i = hand.size()-1; i >= 0; i-- ) {
 			hand.get(i).toFront();
-			System.out.println("StartZ " + hand.get(i).getZIndex());
 		}
-		System.out.println("--------------");
 	}
 	
 	public void dispose() {
