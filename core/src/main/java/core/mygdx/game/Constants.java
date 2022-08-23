@@ -92,4 +92,14 @@ public class Constants {
 	public static final int deckExitButtonWidth = 50;
 	public static final int deckExitButtonHeight = 50;
 	
+	public static final int scrollBarWidth = 25;
+	public static final int scrollBarXGap = 15; 
+	public static final int scrollBarYGap = 20;
+	
+	public static final int confirmButtonWidth = 125;
+	public static final int confirmButtonHeight = 65;
+	public static final int confirmButtonXGap = 50;
+	public static final int confirmButtonYGap = 120;
+	
+	
 }

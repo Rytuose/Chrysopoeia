@@ -13,6 +13,7 @@ public enum Symbol {
 	REFRESH5(-1),
 	
 	//Symbols Added
+	GHOST(0),
 	LEAD(1),
 	LEAD_OR_COPPER(-1),
 	COPPER(2),
@@ -23,7 +24,9 @@ public enum Symbol {
 	
 	//Effects that require prompts
 	DISCARD(-2),
-	UPGRADE(-2),
+	SEARCH(-2),
+	MOVE_LEFT(-2),
+	MOVE_RIGHT(-2),
 	UPGRADE1(-2),
 	UPGRADE2(-2),
 	UPGRADE3(-2);

@@ -32,11 +32,9 @@ public class Deck {
 		refreshCard = new Card(gameRenderer);
 		refreshCard.addSymbol(Symbol.REFRESH4, Location.CENTER);
 		refreshCard.addSymbol(Symbol.RETURN, Location.CENTER);
-		refreshCard.addSymbol(Symbol.UPGRADE, Location.CENTER);
-		refreshCard.addSymbol(Symbol.UPGRADE, Location.CENTER);
-//		refreshCard.addSymbol(Symbol.UPGRADE1, Location.CENTER);
-//		refreshCard.addSymbol(Symbol.UPGRADE2, Location.CENTER);
-//		refreshCard.addSymbol(Symbol.UPGRADE3, Location.CENTER);
+		refreshCard.addSymbol(Symbol.UPGRADE1, Location.CENTER);
+		refreshCard.addSymbol(Symbol.UPGRADE2, Location.CENTER);
+		refreshCard.addSymbol(Symbol.UPGRADE3, Location.CENTER);
 		
 		deckList.add(refreshCard);
 		deck.add(0, refreshCard);
@@ -122,9 +120,14 @@ public class Deck {
 	}
 	
 
-	public void resetUpgradeOptions() {
+	public void resetUpgradeOptions(int level) {
 		upgradeList.clear();
-		upgradeList.addAll(deckList);
+		for(Card c: deckList) {
+			if(c.getLevel() < level) {
+				upgradeList.add(c);
+			}
+		}
+		//upgradeList.addAll(deckList);
 		System.out.println("upgradeList " + upgradeList.size() + " " + deckList.size());
 		
 	}
@@ -166,24 +169,21 @@ public class Deck {
 		Card c;	
 		
 		//Lead Production Card
-		for(int i = 0; i < 2; i++) {
-			c = new Card(gameRenderer);
-			c.addSymbol(Symbol.LEAD, Location.CENTER);
-			c.addSymbol(Symbol.LEAD, Location.CENTER);
-			this.add(c);
-		}
+		c = new Card(gameRenderer);
+		c.addSymbol(Symbol.LEAD, Location.CENTER);
+		c.addSymbol(Symbol.LEAD, Location.CENTER);
+		this.add(c);
 		
 		//Copper Production Card
 		c = new Card(gameRenderer);
 		c.addSymbol(Symbol.COPPER, Location.CENTER);
 		this.add(c);
 		
-		//Lead Trade Card
+		//Copper Trade Card
 		c = new Card(gameRenderer);
 		c.addSymbol(Symbol.COPPER, Location.INPUT);
-		c.addSymbol(Symbol.LEAD, Location.CENTER);
-		c.addSymbol(Symbol.LEAD, Location.LEFT);
-		c.addSymbol(Symbol.LEAD, Location.RIGHT);
+		c.addSymbol(Symbol.COPPER, Location.LEFT);
+		c.addSymbol(Symbol.COPPER, Location.RIGHT);
 		this.add(c);
 		
 		//Silver Trade Card
@@ -205,9 +205,18 @@ public class Deck {
 		c = new Card(gameRenderer);
 		c.addSymbol(Symbol.LEAD, Location.INPUT);
 		c.addSymbol(Symbol.COPPER, Location.INPUT);
-		c.addSymbol(Symbol.UPGRADE, Location.CENTER);
+		c.addSymbol(Symbol.UPGRADE1, Location.CENTER);
 		this.add(c);
 		
+		//Move Card
+		c = new Card(gameRenderer);
+		c.addSymbol(Symbol.MOVE_LEFT, Location.CENTER);
+		c.addSymbol(Symbol.MOVE_RIGHT, Location.CENTER);
+		this.add(c);
+		
+		c = new Card(gameRenderer);
+		c.addSymbol(Symbol.GHOST, Location.CENTER);
+		this.add(c);
 	}
 
 	

@@ -15,7 +15,7 @@ public class UpgradeManager {
 	private static Location[] locations = {Location.LEFT, Location.CENTER, Location.RIGHT};
 	
 	public static void createUpgrade(UpgradeCard card, UpgradeCard result, int level) {
-		result.clearSymbols();
+		result.resetCard();
 		result.copyCard(card);
 		CardType type = getCardType(card);
 		
@@ -32,6 +32,8 @@ public class UpgradeManager {
 		case UPGRADE:
 			upgradeUpgrade(result,level);
 			break;
+		case UTILITY:
+			break;
 		}
 //		
 //		result.addSymbol(Symbol.LEAD, Location.INPUT);
@@ -39,10 +41,21 @@ public class UpgradeManager {
 	}
 	
 	private static CardType getCardType(Card c) {
+		
 		if(c.getCenterOutput().contains(Symbol.REFRESH4) || c.getCenterOutput().contains(Symbol.REFRESH5)) {
 			return CardType.REDRAW;
 		}
-		else if(c.getCenterOutput().contains(Symbol.UPGRADE)) {
+		
+		for(Symbol s: c.getCenterOutput()) {
+			if(s.getValue() < 0) {
+				return CardType.UTILITY;
+			}
+		}
+		
+
+		if(c.getCenterOutput().contains(Symbol.UPGRADE1) 
+				|| c.getCenterOutput().contains(Symbol.UPGRADE2) 
+				|| c.getCenterOutput().contains(Symbol.UPGRADE3)) {
 			return CardType.UPGRADE;
 		}
 		else if (c.getInput().isEmpty()) {
@@ -210,6 +223,10 @@ public class UpgradeManager {
 		ArrayList<Symbol> input = c.getInput();
 		ArrayList<Symbol> output = c.getCenterOutput();
 		
+		if(input.isEmpty() || output.isEmpty()) {
+			return;
+		}
+		
 		System.out.println("input " + input.toString());
 		System.out.println("output " + output.toString());
 		
@@ -231,7 +248,33 @@ public class UpgradeManager {
 					i--;
 				}
 			}
+		}		
+	}
+
+	
+	/*================================CARD GENERATION================================*/
+	
+	public static void newCard(Card upgradeCard, int level) {
+		upgradeCard.resetCard();
+		int netValue = level + 2;
+		int symbolPos = (int)(Math.random() * (symbolOrder.length + 1));
+		
+		if(symbolPos < symbolOrder.length) {
+			upgradeCard.addSymbol(symbolOrder[symbolPos], Location.INPUT);
+			netValue += symbolPos + 1;
 		}
+		
+		System.out.println("Upgrade Numbers " + netValue + " " + symbolPos + " " + level);
+		
+		while(netValue > 0) {
+//			netValue -= addRandomSymbol(upgradeCard, netValue,
+//					locations[(int)(Math.random() * locations.length)]);
+			netValue -= addRandomSymbol(upgradeCard, netValue,Location.CENTER);
+		}
+		
+		reduceTrade(upgradeCard);
+		
+		
 	}
 	
 }

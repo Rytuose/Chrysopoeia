@@ -42,15 +42,17 @@ public class StorageContainer extends GameActor {
 			symbolHolders[i].setVisible(false);
 		}
 		
-//		storage.add(Symbol.COPPER);
-//		
-//		storage.add(Symbol.LEAD);
-//		
-//		storage.add(Symbol.SILVER);
-//		
-//		storage.add(Symbol.GOLD);
-//		
-//		storage.sort(null);
+		storage.add(Symbol.COPPER);
+		
+		storage.add(Symbol.LEAD);
+		
+		storage.add(Symbol.SILVER);
+		
+		storage.add(Symbol.GOLD);
+		
+		storage.add(Symbol.GHOST);
+		
+		storage.sort(null);
 		
 		super.setTexture(new Texture(Gdx.files.classpath("CommonCard.png")));
 		this.setBounds(x,y,Constants.storageContainerWidth,Constants.storageContainerHeight);
@@ -134,7 +136,7 @@ public class StorageContainer extends GameActor {
 			sh.setVisible(false);
 		}
 		
-		if(GameStatus.gamestatus != GameStatus.QUESTING) {
+		if(GameStatus.gamestatus != GameStatus.QUESTING && GameStatus.gamestatus != GameStatus.PROMPTING) {
 			return;
 		}
 		
@@ -153,11 +155,16 @@ public class StorageContainer extends GameActor {
 	public void select(int position) {
 		System.out.println("Clicked symbol " + position);
 		Symbol symbol = storage.get(position);
-
-		if(gameRenderer.recieveQuest(symbol,selected[position])) {
+		
+		if(GameStatus.gamestatus == GameStatus.QUESTING) {
+			if(gameRenderer.recieveQuest(symbol,selected[position])) {
+				selected[position] = !selected[position];
+			}
+			gameRenderer.finishQuest();
+		}
+		else {
 			selected[position] = !selected[position];
 		}
-		gameRenderer.finishQuest();
 	}
 	
 	public void addStorage(Symbol s) {
@@ -180,6 +187,16 @@ public class StorageContainer extends GameActor {
 				position ++;
 			}
 		}
+	}
+	
+	public ArrayList<Symbol> getSelected(){
+		ArrayList<Symbol> selectedSymbols = new ArrayList<Symbol>();
+		for(int i = 0; i < selected.length; i++) {
+			if(selected[i]) {
+				selectedSymbols.add(storage.get(i));
+			}
+		}
+		return selectedSymbols;
 	}
 	
 	private void enter() {gameRenderer.setHoverActor(this);}

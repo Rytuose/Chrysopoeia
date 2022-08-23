@@ -57,6 +57,7 @@ public class Card extends GameActor {
 		copyArray(this.getLeftOutput(),c.getLeftOutput());
 		copyArray(this.getCenterOutput(),c.getCenterOutput());
 		copyArray(this.getRightOutput(), c.getRightOutput());
+		level = c.getLevel();
 	}
 	
 	private static void copyArray(ArrayList<Symbol> destination, ArrayList<Symbol> target) {
@@ -67,11 +68,12 @@ public class Card extends GameActor {
 		destination.sort(null);
 	}
 	
-	public void clearSymbols() {
+	public void resetCard() {
 		input.clear();
 		leftOutput.clear();
 		centerOutput.clear();
 		rightOutput.clear();
+		level = 0;
 	}
 	
 	@Override
@@ -123,6 +125,9 @@ public class Card extends GameActor {
 						Constants.symbolWidth * scale, Constants.symbolHeight*scale);
 			}
 		}
+
+		cardFont.draw(batch, "" + level, sprite.getX() + 10, 
+				sprite.getY() + sprite.getHeight() - 10);
 		
 		//System.out.println("Time to draw a card " + (System.nanoTime() - time));
 	}
@@ -227,9 +232,7 @@ public class Card extends GameActor {
 		return totalSymbols;
 	}
 	
-	public void upgrade() {
-		level++;
-	}
+	public void upgrade() {level++;}
 	
 	public int getLevel() {return level;}
 	

@@ -33,12 +33,13 @@ public class UpgradeWindow extends GameActor {
 					getX() + i%2*Constants.upgradeOptionWidth,
 					getY() + getHeight() - (i/2 + 1) * Constants.upgradeOptionHeight);
 		}
+		upgradeOptions[upgradeOptions.length-1].setNewCard(true);
 	}
 	
-	public void setOptions() {
-		deck.resetUpgradeOptions();
+	public void setOptions(int level) {
+		deck.resetUpgradeOptions(level);
 		for(UpgradeOption uo: upgradeOptions) {
-			uo.setOptions();
+			uo.setOptions(level);
 		}
 	}
 	

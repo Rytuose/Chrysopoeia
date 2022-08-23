@@ -16,6 +16,8 @@ public class UpgradeOption extends Actor {
 	private UpgradeCard upgradeCard,upgradeResult;
 	private Card card,upgradeQualities;
 	private UpgradeButton upgradeButton;
+	private boolean newCard;
+	private int cardAmount;
 	
 	
 	public UpgradeOption(GameRenderer gr, Deck d, float x, float y) {
@@ -24,6 +26,7 @@ public class UpgradeOption extends Actor {
 		
 		gameRenderer = gr;
 		deck = d;
+		newCard = false;
 		upgradeCard = new UpgradeCard(gr);
 		upgradeResult = new UpgradeCard(gr);
 		
@@ -44,7 +47,7 @@ public class UpgradeOption extends Actor {
 				this.getY() + ((this.getHeight() - Constants.cardUpgradeHeight) * Constants.cardOptionLowerRatio - upgradeButton.getHeight())/2);
 	}
 	
-	public void setOptions() {
+	public void setOptions(int level) {
 		
 		upgradeCard.setVisible(true);
 		upgradeCard.toFront();
@@ -56,27 +59,35 @@ public class UpgradeOption extends Actor {
 		
 		card = deck.randomUgradeCard();
 		
-		int cards = 2;
+		if(card == null || newCard) {
+			cardAmount = 1;
+			//return;
+		}
+		else {
+			cardAmount = 2;
+		}
 		
-		float cardGap = (this.getWidth() - cards*Constants.cardUpgradeWidth - (cards-1) * Constants.cardUpgradeCenterGap)/2;
+		float cardGap = (this.getWidth() - cardAmount*Constants.cardUpgradeWidth - (cardAmount-1) * Constants.cardUpgradeCenterGap)/2;
 		float cardY = (this.getHeight() - Constants.cardUpgradeHeight) * Constants.cardOptionLowerRatio;
 		
 		System.out.println(cardGap + " " + cardY);
 		System.out.println(this.getX() + " " + this.getY());
 		
 		upgradeCard.setPosition(this.getX() + cardGap,this.getY() + cardY);
-		upgradeCard.copyCard(card);
-		
-		if(cards > 1) {
+
+		if(cardAmount > 1) {
+			upgradeCard.copyCard(card);
 			upgradeResult.setPosition(this.getX() + cardGap + Constants.cardUpgradeWidth + Constants.cardUpgradeCenterGap,
 					this.getY() + cardY);
 			UpgradeManager.createUpgrade(upgradeCard, upgradeResult,card.getLevel());
+			upgradeResult.upgrade();
 //			upgradeResult.copyCard(upgradeCard);
 //			UpgradeManager.createUpgradeQualities(upgradeCard, upgradeQualities);
 //			upgradeResult.add(upgradeQualities);
 			
 		}
 		else {
+			UpgradeManager.newCard(upgradeCard,level);
 			upgradeResult.setVisible(false);
 		}
 		
@@ -84,9 +95,19 @@ public class UpgradeOption extends Actor {
 		
 	}
 	
+	public void setNewCard(boolean nc) {
+		newCard = nc;
+	}
+	
 	public void select() {
-		card.copyCard(upgradeResult);
-		card.upgrade();
+		if(cardAmount == 1) {
+			Card c = new Card(gameRenderer);
+			c.copyCard(upgradeCard);
+			deck.add(c);
+		}
+		else {
+			card.copyCard(upgradeResult);
+		}
 		gameRenderer.finishUpgrade();
 		System.out.println("Select option");
 	}

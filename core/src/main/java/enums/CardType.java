@@ -4,5 +4,6 @@ public enum CardType {
 	PRODUCTION,
 	REDRAW,
 	TRADE,
-	UPGRADE;
+	UPGRADE,
+	UTILITY;
 }
