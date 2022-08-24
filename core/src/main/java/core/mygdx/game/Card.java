@@ -163,9 +163,7 @@ public class Card extends GameActor {
 		
 		if(GameStatus.gamestatus == GameStatus.PLAYING 
 				&& gameRenderer.getHoverActor() instanceof StorageContainer 
-				&& gameRenderer.isPlayable(this,(StorageContainer) gameRenderer.getHoverActor()) ) {			
-
-			System.out.println("Playing Card");
+				&& gameRenderer.isPlayable(this,(StorageContainer) gameRenderer.getHoverActor()) ) {
 			boolean battleOver = gameRenderer.play(this, (StorageContainer) gameRenderer.getHoverActor());
 			if(battleOver) {
 				return;

@@ -26,14 +26,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		GameStatus.gamestatus = GameStatus.PLAYING;
 		gameRenderer = new GameRenderer(this);
 		gameRenderer.setDebugAll(true);
-		deckRenderer = new DeckRenderer(this);
+		deckRenderer = new DeckRenderer(this,gameRenderer);
 		deckRenderer.setDebugAll(true);
 		
 		currentStage = gameRenderer;
 		Gdx.input.setInputProcessor(currentStage);
-		
-		
-
 	}
 
 	@Override
@@ -61,10 +58,10 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 	
 	
-	public void changeToDeckViewer(LinkedList<Card> cardsToDisplay) {
+	public void changeToDeckViewer(LinkedList<Card> cardsToDisplay, boolean isPrompt) {
 		if(!(currentStage instanceof DeckRenderer)) {
 			currentStage = deckRenderer;
-			deckRenderer.update(cardsToDisplay);
+			deckRenderer.update(cardsToDisplay, isPrompt);
 			Gdx.input.setInputProcessor(currentStage);
 		}
 	}
@@ -81,7 +78,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		super.resize(width, height);
 		gameRenderer.resize(width,height);
 		deckRenderer.resize(width, height);
-		System.out.println("Resizing to " + Gdx.graphics.getWidth() + " " + Gdx.graphics.getHeight());
 	}
 	
 }

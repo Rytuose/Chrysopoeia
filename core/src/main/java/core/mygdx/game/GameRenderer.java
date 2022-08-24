@@ -183,7 +183,6 @@ public class GameRenderer extends Stage {
 				storSymbol = storIter.next();
 				System.out.println("Comparing " + reqSymbol + " with " + storSymbol);
 				if (reqSymbol.equals(storSymbol)) { //Implies they have the same value, takes care of the or symbols
-					System.out.println("Passed");
 					break;
 				}
 				else if(reqSymbol.getValue() < storSymbol.getValue()) {
@@ -198,9 +197,6 @@ public class GameRenderer extends Stage {
 				}
 			}	
 		}
-		
-		System.out.println("Valid");
-		
 		return true;
 	}
 	
@@ -226,7 +222,6 @@ public class GameRenderer extends Stage {
 		for(int i = 0; i < requirements.size(); i++) {
 			while(storagePos < storage.size()) {
 				if(requirements.get(i).equals(storage.get(storagePos))) {
-					System.out.println("removed " + storage.get(storagePos));
 					storage.remove(storagePos);
 					break;
 				}
@@ -284,7 +279,6 @@ public class GameRenderer extends Stage {
 	}
 	
 	private void applySymbol(Symbol symbol) {
-		System.out.println("Applying symbol " + symbol);
 		switch(symbol) {
 		case REFRESH4:
 			hand.drawStartingHand(4);
@@ -321,6 +315,15 @@ public class GameRenderer extends Stage {
 			currentContainer.updateSymbols();
 			confirmButton.setVisible(true);
 			confirmButton.toFront();
+			break;
+		case SEARCH:
+			startPrompt(nextSymbol);
+			System.out.println("Search");
+			LinkedList<Card> available = new LinkedList<Card>();
+			available.addAll(deck.getDiscard());
+			available.addAll(deck.getDeck());
+			game.changeToDeckViewer(available, true);
+			//processSymbolQueue();
 			break;
 		case UPGRADE1:
 			startUpgrade(1);
@@ -374,6 +377,10 @@ public class GameRenderer extends Stage {
 			GameStatus.gamestatus = GameStatus.PLAYING;
 			currentContainer.updateSymbols();
 			break;
+		case SEARCH:
+			hand.drawCard((Card)ga);
+			GameStatus.gamestatus = GameStatus.PLAYING;
+			hand.setHand();
 		default:
 			break;
 		}

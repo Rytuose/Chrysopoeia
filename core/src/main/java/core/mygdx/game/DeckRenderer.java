@@ -21,21 +21,25 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class DeckRenderer extends Stage {
 
+	private boolean isPrompt;
 	private int lowestY;
 	private MyGdxGame game;
-	private Button exitButton;
+	private Button exitButton,confirmButton;
 	private Pool<CardHolder> cardHolderPool;
 	private LinkedList<CardHolder> activeCardHolders;
 	private Image transparentLayer;
 	private Card viewingCard;
 	private Sprite viewingSprite;
 	private ScrollBar scrollBar;
+	private GameRenderer gameRenderer;
 	
-	public DeckRenderer(MyGdxGame g) {
+	public DeckRenderer(MyGdxGame g, GameRenderer gr) {
 		super(new FitViewport(Constants.game_width,Constants.game_height,new OrthographicCamera()));
 		game = g;
+		gameRenderer = gr;
 		activeCardHolders = new LinkedList<CardHolder>();
 		viewingSprite = new Sprite();
+		isPrompt = false;
 		
 		scrollBar = new ScrollBar(this);
 		this.addActor(scrollBar);
@@ -52,6 +56,21 @@ public class DeckRenderer extends Stage {
 		exitButton.setBounds(Constants.deckExitButtonXGap, 
 				this.getHeight() - Constants.deckExitButtonYGap - Constants.deckExitButtonHeight, 
 				Constants.deckExitButtonWidth, Constants.deckExitButtonHeight);
+		
+		
+		confirmButton = new Button(new Texture(Gdx.files.classpath("CommonCard.png")),
+				new Texture(Gdx.files.classpath("RareCard.png"))) {
+					@Override
+					public void click() {
+						DeckRenderer.this.exit();
+					}
+		};
+		
+		this.addActor(confirmButton);
+		confirmButton.setBounds(this.getCamera().viewportWidth - Constants.deckConfirmXGap - Constants.deckConfirmWidth,
+				Constants.deckConfirmYGap,Constants.deckConfirmWidth, Constants.deckConfirmHeight);
+		
+		
 		
 		cardHolderPool = new Pool<CardHolder>() {
 			@Override
@@ -85,14 +104,11 @@ public class DeckRenderer extends Stage {
 			public boolean scrolled(InputEvent event, float x, float y, float amountX, float amountY) {
 				super.scrolled(event, x, y, amountX, amountY);
 				if(!transparentLayer.isVisible()) {
-					System.out.println("scrolled");
 					updateCamera( -50 * amountY);
 				}
 				return true;
 			}
 		});
-		
-
 	}
 
 
@@ -113,6 +129,9 @@ public class DeckRenderer extends Stage {
 	}
 	
 	private void exit() {
+		if(isPrompt) {
+			gameRenderer.finishPrompt(viewingCard);
+		}
 		CardHolder ch;
 		while(!activeCardHolders.isEmpty()) {
 			ch = activeCardHolders.pop();
@@ -121,10 +140,12 @@ public class DeckRenderer extends Stage {
 			cardHolderPool.free(ch);
 			
 		}
+		this.viewCard(null);
 		game.changeToGame();
 	}
 	
-	public void update(LinkedList<Card> ctd) {
+	public void update(LinkedList<Card> ctd, boolean ip) {
+		isPrompt = ip;
 		ArrayList<Card> cardsToDisplay = new ArrayList<Card>();
 		for(Card c: ctd) {
 			cardsToDisplay.add(c);
@@ -162,7 +183,13 @@ public class DeckRenderer extends Stage {
 		this.getCamera().position.y = this.getCamera().viewportHeight/2;
 		exitButton.setPosition(exitButton.getX(),
 				this.getHeight() - Constants.deckExitButtonYGap - Constants.deckExitButtonHeight);
+		exitButton.setVisible(!isPrompt);
+		confirmButton.setPosition(this.getCamera().viewportWidth - Constants.deckConfirmXGap - Constants.deckConfirmWidth,
+				Constants.deckConfirmYGap);
+		confirmButton.setVisible(false);
 		scrollBar.resizeScrollBar((int) (this.getCamera().viewportHeight - lowestY));
+		
+
 	}
 	
 	public void viewCard(Card card) {
@@ -170,6 +197,7 @@ public class DeckRenderer extends Stage {
 		if(viewingCard == null) {
 			transparentLayer.toBack();
 			transparentLayer.setVisible(false);
+			confirmButton.setVisible(false);
 		}
 		else {
 			float viewX = (Constants.game_width - Constants.deckRendererViewingCardWidth)/2;
@@ -182,6 +210,10 @@ public class DeckRenderer extends Stage {
 			transparentLayer.setVisible(true);
 			transparentLayer.setPosition(transparentLayer.getX(),
 					this.getCamera().position.y - this.getCamera().viewportHeight/2);
+			if(isPrompt) {
+				confirmButton.setVisible(true);
+				confirmButton.toFront();
+			}
 		}
 		
 	}
@@ -191,22 +223,17 @@ public class DeckRenderer extends Stage {
 		//float deltaY = - y * 50;
 		//yPos += y;
 		
-		System.out.println("DeltaY " + deltaY + " LowestY " + lowestY);
-		
 		if (this.getCamera().position.y + deltaY > this.getViewport().getWorldHeight() - this.getCamera().viewportHeight/2) {
-			System.out.println("stop scroll up");
 			deltaY += this.getViewport().getWorldHeight() - this.getCamera().viewportHeight/2 - (this.getCamera().position.y + deltaY);
 		}
 		else if (this.getCamera().position.y + deltaY < lowestY + this.getCamera().viewportHeight/2) {
-			System.out.println("stop scroll down");
 			deltaY += lowestY + this.getCamera().viewportHeight/2 - (this.getCamera().position.y + deltaY);
 		}
-		
 
-		
 		this.getCamera().translate(0, deltaY,0);
 		
 		exitButton.setPosition(exitButton.getX(), exitButton.getY() + deltaY);
+		confirmButton.setPosition(confirmButton.getX(), confirmButton.getY() + deltaY);
 		scrollBar.setScrollBar(deltaY);
 		
 		//setExitButton();
