@@ -103,6 +103,10 @@ public class UpgradeManager {
 			output.remove(Symbol.DISCARD);
 			break;
 		case 2:
+			output.remove(Symbol.REFRESH5);
+			output.add(Symbol.REFRESH4);
+			output.add(Symbol.SEARCH);
+			output.sort(null);
 			break;
 		}
 	}

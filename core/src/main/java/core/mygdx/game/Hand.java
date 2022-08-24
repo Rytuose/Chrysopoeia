@@ -67,6 +67,15 @@ public class Hand {
 		}
 	}
 	
+	public void drawCard(Card c) {
+		deck.getDeck().remove(c);
+		deck.getDiscard().remove(c);
+		hand.add(c);
+		gameRenderer.addActor(c);
+		c.setVisible(true);
+		c.setTouchable(Touchable.enabled);
+	}
+	
 	
 	public void setHand() {
 		int middle = Constants.game_width/2;

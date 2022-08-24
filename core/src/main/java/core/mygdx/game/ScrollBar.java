@@ -27,8 +27,6 @@ public class ScrollBar extends GameActor {
 			@Override
 			public void touchDragged(InputEvent event,float x,float y,int pointer) {
 				super.touchDragged(event, x, y, pointer);
-
-				System.out.println("Dragged " + Gdx.input.getDeltaY() + " " + Gdx.input.getDeltaY(pointer) + " moveScale " + moveScale);
 				scroll(Gdx.input.getDeltaY());
 				
 			}
@@ -36,7 +34,6 @@ public class ScrollBar extends GameActor {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 				super.touchDown(event, x, y, pointer, button);
-				System.out.println("Touch Down ScrollBar");
 				return true;
 			}
 			
@@ -44,7 +41,6 @@ public class ScrollBar extends GameActor {
 			@Override
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 				super.touchUp(event, x, y, pointer, button);
-				System.out.println("Touch Up ScrollBar");
 			}
 			
 		});
@@ -73,7 +69,6 @@ public class ScrollBar extends GameActor {
 		
 		range = r;
 		ratio = deckRenderer.getCamera().viewportHeight/r;
-		System.out.println("length " + range + " ratio " + ratio);
 		
 		float length = (deckRenderer.getCamera().viewportHeight - 2 * Constants.scrollBarYGap) * ratio;
 		
@@ -83,11 +78,8 @@ public class ScrollBar extends GameActor {
 		float scrollGap = deckRenderer.getCamera().viewportHeight - 2 * Constants.scrollBarYGap - this.getHeight();
 		float deckGap = range - deckRenderer.getCamera().viewportHeight;
 		
-		System.out.println("scrollGap " + scrollGap + " deckGap " + deckGap);
-		
 		float scaleRatio =  1/scrollGap;
 		moveScale = deckGap * scaleRatio;
-		System.out.println("Move Scale " + moveScale);
 	}
 	
 	public void setScrollBar(float deltaY) {

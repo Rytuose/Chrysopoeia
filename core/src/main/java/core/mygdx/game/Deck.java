@@ -32,6 +32,7 @@ public class Deck {
 		refreshCard = new Card(gameRenderer);
 		refreshCard.addSymbol(Symbol.REFRESH4, Location.CENTER);
 		refreshCard.addSymbol(Symbol.RETURN, Location.CENTER);
+		refreshCard.addSymbol(Symbol.SEARCH, Location.CENTER);
 		refreshCard.addSymbol(Symbol.UPGRADE1, Location.CENTER);
 		refreshCard.addSymbol(Symbol.UPGRADE2, Location.CENTER);
 		refreshCard.addSymbol(Symbol.UPGRADE3, Location.CENTER);
@@ -50,7 +51,7 @@ public class Deck {
 		deckViewer = new Button(texture1, texture2) {
 			@Override
 			public void click() {
-				game.changeToDeckViewer(deck);
+				game.changeToDeckViewer(deck,false);
 			}
 		};
 		gameRenderer.addActor(deckViewer);
@@ -60,7 +61,7 @@ public class Deck {
 		discardViewer = new Button(texture1, texture2) {
 			@Override
 			public void click() {
-				game.changeToDeckViewer(discard);
+				game.changeToDeckViewer(discard,false);
 			}
 		};
 		gameRenderer.addActor(discardViewer);
@@ -70,7 +71,7 @@ public class Deck {
 		decklistViewer = new Button(texture1, texture2) {
 			@Override
 			public void click() {
-				game.changeToDeckViewer(deckList);
+				game.changeToDeckViewer(deckList,false);
 			}
 		};
 		gameRenderer.addActor(decklistViewer);
@@ -126,10 +127,7 @@ public class Deck {
 			if(c.getLevel() < level) {
 				upgradeList.add(c);
 			}
-		}
-		//upgradeList.addAll(deckList);
-		System.out.println("upgradeList " + upgradeList.size() + " " + deckList.size());
-		
+		}		
 	}
 	
 	public void resetDeck() {
@@ -216,6 +214,12 @@ public class Deck {
 		
 		c = new Card(gameRenderer);
 		c.addSymbol(Symbol.GHOST, Location.CENTER);
+		this.add(c);
+		
+		//Lead Production Card
+		c = new Card(gameRenderer);
+		c.addSymbol(Symbol.LEAD, Location.CENTER);
+		c.addSymbol(Symbol.LEAD, Location.CENTER);
 		this.add(c);
 	}
 

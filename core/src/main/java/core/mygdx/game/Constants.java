@@ -13,7 +13,6 @@ public class Constants {
 	public static int game_width = 960;
 	public static int game_height = 600;
 
-
 	public static float widthRatio() {return ((float)Gdx.graphics.getWidth())/game_width;}
 	public static float heightRatio() {return ((float)Gdx.graphics.getHeight())/game_height;}
 	
@@ -86,12 +85,7 @@ public class Constants {
 	public static final int deckButtonYGap = 25;
 	public static final int deckButtonWidth = 75;
 	public static final int deckButtonHeight = 75;
-	
-	public static final int deckExitButtonXGap = 20;
-	public static final int deckExitButtonYGap = 30;
-	public static final int deckExitButtonWidth = 50;
-	public static final int deckExitButtonHeight = 50;
-	
+
 	public static final int scrollBarWidth = 25;
 	public static final int scrollBarXGap = 15; 
 	public static final int scrollBarYGap = 20;
@@ -101,5 +95,14 @@ public class Constants {
 	public static final int confirmButtonXGap = 50;
 	public static final int confirmButtonYGap = 120;
 	
-	
+	public static final int deckExitButtonXGap = 20;
+	public static final int deckExitButtonYGap = 30;
+	public static final int deckExitButtonWidth = 50;
+	public static final int deckExitButtonHeight = 50;
+	public static final int deckConfirmWidth = 150;
+	public static final int deckConfirmHeight = 50;
+	public static final int deckConfirmXGap = Constants.scrollBarWidth 
+			+ Constants.scrollBarXGap*2;
+	public static final int deckConfirmYGap = 25;
+
 }

@@ -70,9 +70,6 @@ public class UpgradeOption extends Actor {
 		float cardGap = (this.getWidth() - cardAmount*Constants.cardUpgradeWidth - (cardAmount-1) * Constants.cardUpgradeCenterGap)/2;
 		float cardY = (this.getHeight() - Constants.cardUpgradeHeight) * Constants.cardOptionLowerRatio;
 		
-		System.out.println(cardGap + " " + cardY);
-		System.out.println(this.getX() + " " + this.getY());
-		
 		upgradeCard.setPosition(this.getX() + cardGap,this.getY() + cardY);
 
 		if(cardAmount > 1) {
@@ -109,7 +106,6 @@ public class UpgradeOption extends Actor {
 			card.copyCard(upgradeResult);
 		}
 		gameRenderer.finishUpgrade();
-		System.out.println("Select option");
 	}
 	
 	@Override
