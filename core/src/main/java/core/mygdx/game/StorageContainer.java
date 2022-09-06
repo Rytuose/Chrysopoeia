@@ -21,16 +21,22 @@ public class StorageContainer extends GameActor {
 
 	public static BitmapFont containerFont = new BitmapFont(Gdx.files.classpath("Consolas.fnt"));
 	
+	private int attackCountdown, attackAmount;
 	private SymbolHolder[] symbolHolders;
 	private GameRenderer gameRenderer;
 	private ArrayList<Symbol> storage;//,selected;
 	private boolean[] selected;
+	private Texture unselectedTexture, selectedTexture;
+	private boolean canFinishQuest;
+	private Button questButton;
 	
 	public StorageContainer(GameRenderer gr, float x, float y) {
 		super();
 		
 		gameRenderer = gr;
-		
+		attackCountdown = 1;//(int)(Math.random() * 5) + 1;
+		attackAmount = 2;
+		canFinishQuest = false;
 
 		storage = new ArrayList<Symbol>();
 		symbolHolders = new SymbolHolder[Constants.maxSymbolStorage];
@@ -42,19 +48,22 @@ public class StorageContainer extends GameActor {
 			symbolHolders[i].setVisible(false);
 		}
 		
-		storage.add(Symbol.COPPER);
+//		storage.add(Symbol.COPPER);
+//		
+//		storage.add(Symbol.LEAD);
+//		
+//		storage.add(Symbol.SILVER);
+//		
+//		storage.add(Symbol.GOLD);
+//		
+//		storage.add(Symbol.GHOST);
+//		
+//		storage.sort(null);
 		
-		storage.add(Symbol.LEAD);
+		unselectedTexture = new Texture(Gdx.files.classpath("CommonCard.png"));
+		selectedTexture = new Texture(Gdx.files.classpath("BasicCard1.png"));
 		
-		storage.add(Symbol.SILVER);
-		
-		storage.add(Symbol.GOLD);
-		
-		storage.add(Symbol.GHOST);
-		
-		storage.sort(null);
-		
-		super.setTexture(new Texture(Gdx.files.classpath("CommonCard.png")));
+		super.setTexture(unselectedTexture);
 		this.setBounds(x,y,Constants.storageContainerWidth,Constants.storageContainerHeight);
 		
 		this.addListener(new ClickListener() {
@@ -82,28 +91,46 @@ public class StorageContainer extends GameActor {
 		 	}
 			
 		});
+		
+		questButton = new Button(selectedTexture, unselectedTexture) {
+			@Override
+			public void click() {
+				gameRenderer.completeQuest(StorageContainer.this);
+			}	
+		};
+		
+		gameRenderer.addActor(questButton);
+		questButton.setBounds(this.getX(), this.getY() + this.getHeight(), 50, 50);
+		questButton.setVisible(false);
 	}
 	
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		super.draw(batch, parentAlpha);
-		//writeText(batch, this.getSprite());
+		writeText(batch, this.getSprite());
 		drawSymbols(batch,this.getSprite());
 	}
 	
 	public void writeText(Batch batch, Sprite sprite) {
 		float scale = sprite.getWidth()/Constants.cardWidth;
 		
-		String str = "";
-		
-		for(Symbol symbol : storage) {
-			str += (symbol + "\n");
-		}
-		
 		containerFont.getData().setScale(Constants.cardTextRatio * scale);
 		containerFont.setColor(Color.BLACK);
-		containerFont.draw(batch, str , sprite.getX(), 
-				sprite.getY() + (Constants.cardTextStartY * scale), sprite.getWidth(), Align.center, false);
+		containerFont.draw(batch, "Attack in: " + attackCountdown + " for " + attackAmount,
+				sprite.getX(),
+				sprite.getY() + 30,
+				sprite.getWidth(), Align.center,false);
+		
+//		String str = "";
+//		
+//		for(Symbol symbol : storage) {
+//			str += (symbol + "\n");
+//		}
+//		
+//		containerFont.getData().setScale(Constants.cardTextRatio * scale);
+//		containerFont.setColor(Color.BLACK);
+//		containerFont.draw(batch, str , sprite.getX(), 
+//				sprite.getY() + (Constants.cardTextStartY * scale), sprite.getWidth(), Align.center, false);
 	}
 	
 	public void drawSymbols(Batch batch, Sprite sprite) {
@@ -199,9 +226,53 @@ public class StorageContainer extends GameActor {
 		return selectedSymbols;
 	}
 	
+	public void endTurn() {
+		attackCountdown --;
+		if(attackCountdown == 0) {
+			//System.out.println("Attack " + storage.toString());
+			int ghosts = 0;
+			int attack = attackAmount;
+			for(Symbol s: storage) {
+				if(s == Symbol.GHOST) {
+					ghosts++;
+				}
+			}
+			attack -= ghosts;
+			
+			//System.out.println("Ghosts " + ghosts + " Attack " + attack);
+			
+			while(attack > 0 && storage.size() - ghosts > 0) {
+				int randPos = (int)(Math.random() * (storage.size() - ghosts) + ghosts);
+				//System.out.println("Removing position " + randPos);
+				storage.remove(randPos);
+				attack --;
+			}
+			
+			attackCountdown = (int)(Math.random() * 3) + 3;
+			
+		}
+		
+		checkQuest();
+
+	}
+	
+	public void checkQuest() {
+		if(gameRenderer.containsAll(gameRenderer.getQuest(), storage)) {
+			this.getSprite().setTexture(selectedTexture);
+			canFinishQuest = true;
+		}
+		else {
+			this.getSprite().setTexture(unselectedTexture);
+			canFinishQuest = false;
+		}
+		questButton.setVisible(canFinishQuest);
+	}
+	
 	private void enter() {gameRenderer.setHoverActor(this);}
 	
 	private void exit() {gameRenderer.removeHoverActor(this);}
+	
+	public boolean getCanFinishQuest() {return canFinishQuest;}
 
 	public ArrayList<Symbol> getStorage() {return storage;}
 	

@@ -9,22 +9,24 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import enums.Symbol;
 
-public class QuestViewer extends Button {
+public class QuestViewer extends GameActor {
 	
 	private GameRenderer gameRenderer;
 	private ArrayList<Symbol> quest;
 	private ArrayList<Boolean> completed;
 	private int startX,startY,questStage;
+	private StorageContainer[] storageContainers;
 	
-	public QuestViewer(GameRenderer gr) {
-		super(new Texture(Gdx.files.classpath("CommonCard.png")),
-				new Texture(Gdx.files.classpath("RareCard.png")));
+	public QuestViewer(GameRenderer gr, StorageContainer[] sc) {
+		super();
 		gameRenderer = gr;
+		this.setTexture(new Texture(Gdx.files.classpath("CommonCard.png")));
 		this.setBounds(getX(), getY(), Constants.questWidth, Constants.questHeight);
 		quest = new ArrayList<Symbol>();
 		completed = new ArrayList<Boolean>();
 		startX = 0;
 		questStage = 0;
+		storageContainers = sc;
 	}
 	
 	@Override
@@ -133,17 +135,27 @@ public class QuestViewer extends Button {
 		return true;
 	}
 
-	@Override
 	public void click() {
 		//Can't use contains as quantity matters
-		ArrayList<Symbol> pool = gameRenderer.getAllSymbols();
+		boolean isPlayable = false;
 		
-		boolean isPlayable = gameRenderer.containsAll(quest, pool);
+//		ArrayList<Symbol> pool = gameRenderer.getAllSymbols();
 		
-		System.out.println("isPlayabe " + isPlayable );
+		
+//		isPlayable = gameRenderer.containsAll(quest, pool);
+//		
+//		System.out.println("isPlayabe " + isPlayable );
+		
+		for(StorageContainer sc: storageContainers) {
+			if(sc.getCanFinishQuest()) {
+				isPlayable = true;
+			}
+		}
 		
 		if(isPlayable) {
 			gameRenderer.startQuest();
 		}
 	}
+	
+	public ArrayList<Symbol> getQuest() { return quest;}
 }

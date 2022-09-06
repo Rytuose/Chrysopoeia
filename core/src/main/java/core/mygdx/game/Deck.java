@@ -32,10 +32,10 @@ public class Deck {
 		refreshCard = new Card(gameRenderer);
 		refreshCard.addSymbol(Symbol.REFRESH4, Location.CENTER);
 		refreshCard.addSymbol(Symbol.RETURN, Location.CENTER);
-		refreshCard.addSymbol(Symbol.SEARCH, Location.CENTER);
-		refreshCard.addSymbol(Symbol.UPGRADE1, Location.CENTER);
-		refreshCard.addSymbol(Symbol.UPGRADE2, Location.CENTER);
-		refreshCard.addSymbol(Symbol.UPGRADE3, Location.CENTER);
+//		refreshCard.addSymbol(Symbol.SEARCH, Location.CENTER);
+//		refreshCard.addSymbol(Symbol.UPGRADE1, Location.CENTER);
+//		refreshCard.addSymbol(Symbol.UPGRADE2, Location.CENTER);
+//		refreshCard.addSymbol(Symbol.UPGRADE3, Location.CENTER);
 		
 		deckList.add(refreshCard);
 		deck.add(0, refreshCard);
@@ -184,20 +184,20 @@ public class Deck {
 		c.addSymbol(Symbol.COPPER, Location.RIGHT);
 		this.add(c);
 		
-		//Silver Trade Card
-		c = new Card(gameRenderer);
-		c.addSymbol(Symbol.LEAD, Location.INPUT);
-		c.addSymbol(Symbol.LEAD_OR_COPPER, Location.INPUT);
-		c.addSymbol(Symbol.COPPER, Location.INPUT);
-		c.addSymbol(Symbol.SILVER, Location.CENTER);
-		this.add(c);
-		
-		//Gold Trade Card (Probably remove this later)
-		c = new Card(gameRenderer);
-		c.addSymbol(Symbol.SILVER, Location.INPUT);
-		c.addSymbol(Symbol.COPPER, Location.INPUT);
-		c.addSymbol(Symbol.GOLD, Location.CENTER);
-		this.add(c);
+//		//Silver Trade Card
+//		c = new Card(gameRenderer);
+//		c.addSymbol(Symbol.LEAD, Location.INPUT);
+//		c.addSymbol(Symbol.LEAD_OR_COPPER, Location.INPUT);
+//		c.addSymbol(Symbol.COPPER, Location.INPUT);
+//		c.addSymbol(Symbol.SILVER, Location.CENTER);
+//		this.add(c);
+//		
+//		//Gold Trade Card (Probably remove this later)
+//		c = new Card(gameRenderer);
+//		c.addSymbol(Symbol.SILVER, Location.INPUT);
+//		c.addSymbol(Symbol.COPPER, Location.INPUT);
+//		c.addSymbol(Symbol.GOLD, Location.CENTER);
+//		this.add(c);
 		
 		//Upgrade Card
 		c = new Card(gameRenderer);
@@ -216,10 +216,10 @@ public class Deck {
 		c.addSymbol(Symbol.GHOST, Location.CENTER);
 		this.add(c);
 		
-		//Lead Production Card
 		c = new Card(gameRenderer);
-		c.addSymbol(Symbol.LEAD, Location.CENTER);
-		c.addSymbol(Symbol.LEAD, Location.CENTER);
+		c.addSymbol(Symbol.GHOST, Location.INPUT);
+		c.addSymbol(Symbol.COPPER, Location.CENTER);
+		c.addSymbol(Symbol.GHOST, Location.RIGHT);
 		this.add(c);
 	}
 

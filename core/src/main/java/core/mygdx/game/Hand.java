@@ -86,7 +86,7 @@ public class Hand {
 		Card c;
 		
 		int startZ = 0;
-		if(GameStatus.gamestatus == GameStatus.PROMPTING) {
+		if(GameStatus.gamestatus == GameStatus.PROMPTING && hand.size() > 1) {
 			startZ = hand.get(1).getZIndex(); //Hand should never have 0 cards
 			for(int i = 1; i < hand.size(); i++) {
 				c = hand.get(i);
