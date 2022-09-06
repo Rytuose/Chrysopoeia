@@ -13,6 +13,7 @@ public class UpgradeManager {
 	private static Symbol[] expandedSymbolOrder = {Symbol.LEAD, Symbol.LEAD_OR_COPPER, Symbol.COPPER,
 			Symbol.COPPER_OR_SILVER, Symbol.SILVER, Symbol.SILVER_OR_GOLD, Symbol.GOLD};
 	private static Location[] locations = {Location.LEFT, Location.CENTER, Location.RIGHT};
+	private static Symbol[] upgradeOrder = {Symbol.UPGRADE1, Symbol.UPGRADE2, Symbol.UPGRADE3};
 	
 	public static void createUpgrade(UpgradeCard card, UpgradeCard result, int level) {
 		result.resetCard();
@@ -46,6 +47,13 @@ public class UpgradeManager {
 			return CardType.REDRAW;
 		}
 		
+
+		if(c.getCenterOutput().contains(Symbol.UPGRADE1) 
+				|| c.getCenterOutput().contains(Symbol.UPGRADE2) 
+				|| c.getCenterOutput().contains(Symbol.UPGRADE3)) {
+			return CardType.UPGRADE;
+		}
+		
 		for(Symbol s: c.getCenterOutput()) {
 			if(s.getValue() < 0) {
 				return CardType.UTILITY;
@@ -53,12 +61,7 @@ public class UpgradeManager {
 		}
 		
 
-		if(c.getCenterOutput().contains(Symbol.UPGRADE1) 
-				|| c.getCenterOutput().contains(Symbol.UPGRADE2) 
-				|| c.getCenterOutput().contains(Symbol.UPGRADE3)) {
-			return CardType.UPGRADE;
-		}
-		else if (c.getInput().isEmpty()) {
+		if (c.getInput().isEmpty()) {
 			return CardType.PRODUCTION;
 		}
 		else {
@@ -133,15 +136,21 @@ public class UpgradeManager {
 		int upgradePoints = level + 1;
 		LinkedList<Location> activeLocations = getActiveLocations(card);
 		while(upgradePoints > 0) {
-			int option = (int)(Math.random()*1);
+			int option = (int)(Math.random()*2);
 			switch(option) {
 			case 0:
-				upgradePoints = UpgradeManager.reduceInput(card, upgradePoints,activeLocations);
+				while(upgradePoints > 0) {
+					upgradePoints = UpgradeManager.reduceInput(card, upgradePoints,activeLocations);
+				}
+				return;
+			case 1:
+				upgradePoints = UpgradeManager.upgradeUpgradeQuality(card, upgradePoints, activeLocations);
 				break;
 			}
 		}
 	}
-	
+
+
 	private static LinkedList<Location> getActiveLocations(Card card){
 		LinkedList<Location> activeLocations = new LinkedList<Location>();
 		if(!card.getLeftOutput().isEmpty()) {
@@ -184,6 +193,11 @@ public class UpgradeManager {
 				if(s == Symbol.GOLD) {
 					int newValue = UpgradeManager.addOutput(card, value, activeLocations);
 					return newValue;
+				}
+				if(s == Symbol.GHOST) {
+					card.getLocation(loc).add(Symbol.GHOST);
+					card.getLocation(loc).sort(null);
+					return value - 1;
 				}
 				
 				System.out.println("Upgrading " + s);
@@ -253,6 +267,29 @@ public class UpgradeManager {
 				}
 			}
 		}		
+	}
+	
+	
+	private static int upgradeUpgradeQuality(Card card, int value, LinkedList<Location> activeLocations) {
+		System.out.println("Upgrade Upgrade");
+		ArrayList<Symbol> output = card.getCenterOutput();
+		Symbol symbol;
+		for(int i = 0 ; i < output.size(); i++) {
+			symbol = output.get(i);
+			for(int j = 0 ; j < upgradeOrder.length; j++) {
+				if(symbol == upgradeOrder[j] && symbol != Symbol.UPGRADE3) {
+					System.out.println("FOUND " + symbol);
+					output.remove(symbol);
+					output.add(upgradeOrder[j+1]);
+					output.sort(null);
+					card.getInput().add(symbolOrder[j+2]);
+					return 0;
+				}
+			}
+		}
+		
+		return UpgradeManager.reduceInput(card, value, activeLocations);
+		
 	}
 
 	

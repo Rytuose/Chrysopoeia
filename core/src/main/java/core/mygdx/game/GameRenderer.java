@@ -69,10 +69,7 @@ public class GameRenderer extends Stage {
 		this.addActor(viewButton);
 		viewButton.setVisible(false);
 		
-		questViewer = new QuestViewer(this);
-		this.addActor(questViewer);
-		questViewer.setPosition((getWidth() - questViewer.getWidth())/2, getHeight() - questViewer.getHeight());
-		questViewer.setQuest();
+
 		
 		StorageContainer sc;
 		storageContainers = new StorageContainer[3];
@@ -84,6 +81,11 @@ public class GameRenderer extends Stage {
 			storageContainers[i] = sc;
 			this.addActor(sc);
 		}
+		
+		questViewer = new QuestViewer(this,storageContainers);
+		this.addActor(questViewer);
+		questViewer.setPosition((getWidth() - questViewer.getWidth())/2, getHeight() - questViewer.getHeight());
+		questViewer.setQuest();
 		
 		Pixmap shadedLayer = new Pixmap((int)this.getWidth(), (int)this.getHeight(), Pixmap.Format.RGBA8888);
 		shadedLayer.setColor(0, 0, 0, Constants.transparencyRatio);
@@ -185,7 +187,7 @@ public class GameRenderer extends Stage {
 				if (reqSymbol.equals(storSymbol)) { //Implies they have the same value, takes care of the or symbols
 					break;
 				}
-				else if(reqSymbol.getValue() < storSymbol.getValue()) {
+				else if(reqSymbol.getValue() < storSymbol.getValue() && storSymbol != Symbol.GHOST ) {
 					System.out.println(reqSymbol + " does not exist/has too little");
 					return false;
 				}
@@ -259,7 +261,10 @@ public class GameRenderer extends Stage {
 		
 		processSymbolQueue();
 		
-		turnCounter++;
+//		turnCounter++;
+//		for(StorageContainer sc:storageContainers) {
+//			sc.endTurn();
+//		}
 		
 		return false;
 	}
@@ -297,6 +302,10 @@ public class GameRenderer extends Stage {
 	private void processSymbolQueue() {
 		if(symbolQueue.isEmpty()) {
 			GameStatus.gamestatus = GameStatus.PLAYING;
+			turnCounter++;
+			for(StorageContainer sc:storageContainers) {
+				sc.endTurn();
+			}
 			return;
 		}
 		Symbol nextSymbol = symbolQueue.pop();
@@ -317,11 +326,16 @@ public class GameRenderer extends Stage {
 			confirmButton.toFront();
 			break;
 		case SEARCH:
-			startPrompt(nextSymbol);
-			System.out.println("Search");
 			LinkedList<Card> available = new LinkedList<Card>();
 			available.addAll(deck.getDiscard());
 			available.addAll(deck.getDeck());
+			
+			if(available.isEmpty()) {
+				processSymbolQueue();
+				return;
+			}
+			
+			startPrompt(nextSymbol);
 			game.changeToDeckViewer(available, true);
 			//processSymbolQueue();
 			break;
@@ -443,11 +457,36 @@ public class GameRenderer extends Stage {
 		for(StorageContainer sc : storageContainers) {
 			sc.processSelected();
 			sc.updateSymbols();
+
 		}
 		questViewer.setQuest();
 		questViewer.setTouchable(Touchable.enabled);
 		viewButton.setVisible(false);
-
+		
+		
+		for(StorageContainer sc: storageContainers) {
+			sc.checkQuest();
+		}
+	}
+	
+	public void completeQuest(StorageContainer sc) {
+		GameStatus.gamestatus = GameStatus.PLAYING;
+		transparentLayer.setVisible(false);
+		
+		ArrayList<Symbol> pool = sc.getStorage();
+		
+		for(Symbol s:questViewer.getQuest()) {
+			pool.remove(s);
+		}
+		
+		
+		questViewer.setQuest();
+		questViewer.setTouchable(Touchable.enabled);
+		viewButton.setVisible(false);
+		
+		for(StorageContainer stor: storageContainers) {
+			stor.checkQuest();
+		}
 	}
 	
 	public void toggleView() {
@@ -505,6 +544,9 @@ public class GameRenderer extends Stage {
 		
 		return pool;
 	}
+	
+	
+	public ArrayList<Symbol> getQuest() {return questViewer.getQuest();}
 	
 	public void release() {if(clickedActor instanceof Card)((Card)clickedActor).release();}
 	

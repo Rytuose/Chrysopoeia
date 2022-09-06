@@ -112,7 +112,9 @@ public class UpgradeOption extends Actor {
 	public void setVisible(boolean isVisible) {
 		super.setVisible(isVisible);
 		upgradeCard.setVisible(isVisible);
-		upgradeResult.setVisible(isVisible);
+		if(cardAmount != 1) {
+			upgradeResult.setVisible(isVisible);
+		}
 		upgradeButton.setVisible(isVisible);
 	}
 	
