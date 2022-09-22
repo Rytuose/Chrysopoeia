@@ -34,7 +34,7 @@ public class StorageContainer extends GameActor {
 		super();
 		
 		gameRenderer = gr;
-		attackCountdown = 1;//(int)(Math.random() * 5) + 1;
+		attackCountdown = (int)(Math.random() * 5) + 1;
 		attackAmount = 2;
 		canFinishQuest = false;
 
@@ -180,7 +180,7 @@ public class StorageContainer extends GameActor {
 	}
 
 	public void select(int position) {
-		System.out.println("Clicked symbol " + position);
+		System.out.println("Clicked symbol " + position + " " + GameStatus.gamestatus);
 		Symbol symbol = storage.get(position);
 		
 		if(GameStatus.gamestatus == GameStatus.QUESTING) {

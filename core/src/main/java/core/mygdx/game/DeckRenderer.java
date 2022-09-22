@@ -239,7 +239,16 @@ public class DeckRenderer extends Stage {
 		//setExitButton();
 	}
 	
-	public void resize(int width, int height) {this.getViewport().update(width,height,true);}
+	public void resize(int width, int height) {
+		this.getViewport().update(width,height,true);
+		exitButton.setPosition(exitButton.getX(),
+				this.getHeight() - Constants.deckExitButtonYGap - Constants.deckExitButtonHeight);
+		exitButton.setVisible(!isPrompt);
+		confirmButton.setPosition(this.getCamera().viewportWidth - Constants.deckConfirmXGap - Constants.deckConfirmWidth,
+				Constants.deckConfirmYGap);
+		confirmButton.setVisible(false);
+		scrollBar.resizeScrollBar((int) (this.getCamera().viewportHeight - lowestY));
+	}
 	
 	
 }

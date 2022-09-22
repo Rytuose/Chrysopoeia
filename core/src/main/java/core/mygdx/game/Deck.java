@@ -36,12 +36,15 @@ public class Deck {
 //		refreshCard.addSymbol(Symbol.UPGRADE1, Location.CENTER);
 //		refreshCard.addSymbol(Symbol.UPGRADE2, Location.CENTER);
 //		refreshCard.addSymbol(Symbol.UPGRADE3, Location.CENTER);
+		refreshCard.addSymbol(Symbol.NEW_CARD2, Location.CENTER);
 		
 		deckList.add(refreshCard);
 		deck.add(0, refreshCard);
 		refreshCard.remove();
 		
 		createButtons();
+		
+		//testUpgrade();
 	}
 	
 	private void createButtons() {
@@ -162,10 +165,119 @@ public class Deck {
 	
 	public LinkedList<Card> getDeckList(){return deckList;}
 	
+	private void testUpgrade() {
+		UpgradeCard uc1,uc2,temp;
+		Card c;//,newCard;
+		
+		uc1 = new UpgradeCard(gameRenderer);
+		uc2 = new UpgradeCard(gameRenderer);
+		
+		c = new Card(gameRenderer);
+		c.addSymbol(Symbol.LEAD, Location.CENTER);
+		c.addSymbol(Symbol.LEAD, Location.CENTER);
+		//this.add(c);
+		
+//		int step = 1;
+//		int amount = 1000;
+//		int error = 100;
+//		
+//		System.out.println((amount/4 - error) + " " + (amount/4 + error));
+//		
+//		for(int l = 250 ; l < 260; l+=step) {
+//			for(int k = 790; k < 850; k+=step) {
+//				UpgradeManager.prob1 = l/1000.0;
+//				UpgradeManager.prob2 = k/1000.0;
+//				
+//				for(int i = 0; i < amount; i++) {
+//					uc1.copyCard(c);
+//					//newCard = new Card(gameRenderer);
+//					
+//					for(int j = 0 ; j < 3; j++) {
+//						UpgradeManager.createUpgrade(uc1, uc2, j);
+//						temp = uc2;
+//						uc2 = uc1;
+//						uc1 = temp;
+//					}
+//					
+//					//newCard.copyCard(uc1);
+//					
+//					//this.add(newCard);
+//				}
+//				
+////				System.out.println("(" + l + " " + k + ")\t" + 
+////						UpgradeManager.cardRatio.toString());
+//				
+//
+//				
+//				boolean valid = true;
+//				int errors = 0;
+//				for(int val :UpgradeManager.cardRatio.values()) {
+//					if(val <= amount/4 - error || val >= amount/4 + error) {
+//						valid = false;
+//						continue;
+//					}
+//					errors += Math.abs(amount/4 - val);
+//				}
+//				
+//				if(UpgradeManager.cardRatio.values().size() < 4 || !valid || errors > 160) {
+//					UpgradeManager.cardRatio.clear();
+//					//System.out.println("(" + l + " " + k + ")\tINVAID");
+//					continue;
+//				}
+//				
+//
+//				
+//				System.out.print("(" + l + " " + k + ")\t");
+//				for(int val :UpgradeManager.cardRatio.values()) {
+//					System.out.print(val + "\t");
+//				}
+//				System.out.println(errors);
+//				UpgradeManager.cardRatio.clear();
+//			}
+//		}
+		
+		for(int k = 0 ; k < 100; k++) {
+			for(int i = 0; i < 1000; i++) {
+				uc1.copyCard(c);
+				//newCard = new Card(gameRenderer);
+				
+				for(int j = 0 ; j < 3; j++) {
+					UpgradeManager.createUpgrade(uc1, uc2, j);
+					temp = uc2;
+					uc2 = uc1;
+					uc1 = temp;
+				}
+				
+				//newCard.copyCard(uc1);
+				
+				//this.add(newCard);
+			}
+			
+			System.out.println(UpgradeManager.cardRatio.toString());
+			for(int val :UpgradeManager.cardRatio.values()) {
+				System.out.print(val + "\t");
+			}
+			UpgradeManager.cardRatio.clear();
+			System.out.println();
+		}
+	}
+	
 	private void makeStartingDeck() {
 		
-		Card c;	
+		Card c;
 		
+//		//Lead Production Card
+//		c = new Card(gameRenderer);
+//		c.addSymbol(Symbol.LEAD, Location.CENTER);
+//		c.addSymbol(Symbol.LEAD, Location.CENTER);
+//		this.add(c);
+//		
+//		//Lead Production Card
+//		c = new Card(gameRenderer);
+//		c.addSymbol(Symbol.LEAD, Location.CENTER);
+//		c.addSymbol(Symbol.LEAD, Location.CENTER);
+//		this.add(c);
+//		
 		//Lead Production Card
 		c = new Card(gameRenderer);
 		c.addSymbol(Symbol.LEAD, Location.CENTER);
@@ -176,14 +288,14 @@ public class Deck {
 		c = new Card(gameRenderer);
 		c.addSymbol(Symbol.COPPER, Location.CENTER);
 		this.add(c);
-		
-		//Copper Trade Card
-		c = new Card(gameRenderer);
-		c.addSymbol(Symbol.COPPER, Location.INPUT);
-		c.addSymbol(Symbol.COPPER, Location.LEFT);
-		c.addSymbol(Symbol.COPPER, Location.RIGHT);
-		this.add(c);
-		
+//		
+//		//Copper Trade Card
+//		c = new Card(gameRenderer);
+//		//c.addSymbol(Symbol.COPPER, Location.INPUT);
+//		c.addSymbol(Symbol.COPPER, Location.LEFT);
+//		c.addSymbol(Symbol.COPPER, Location.RIGHT);
+//		this.add(c);
+//		
 //		//Silver Trade Card
 //		c = new Card(gameRenderer);
 //		c.addSymbol(Symbol.LEAD, Location.INPUT);
@@ -198,20 +310,45 @@ public class Deck {
 //		c.addSymbol(Symbol.COPPER, Location.INPUT);
 //		c.addSymbol(Symbol.GOLD, Location.CENTER);
 //		this.add(c);
-		
+//		
 		//Upgrade Card
 		c = new Card(gameRenderer);
 		c.addSymbol(Symbol.LEAD, Location.INPUT);
 		c.addSymbol(Symbol.COPPER, Location.INPUT);
 		c.addSymbol(Symbol.UPGRADE1, Location.CENTER);
+		c.addSymbol(Symbol.NEW_CARD1, Location.CENTER);
 		this.add(c);
+//	
+//		//Upgrade Card
+//		c = new Card(gameRenderer);
+//		c.addSymbol(Symbol.LEAD, Location.INPUT);
+//		c.addSymbol(Symbol.COPPER, Location.INPUT);
+//		c.addSymbol(Symbol.UPGRADE1, Location.CENTER);
+//		this.add(c);
+//	
+//		
+//		//Upgrade Card
+//		c = new Card(gameRenderer);
+//		c.addSymbol(Symbol.COPPER, Location.INPUT);
+//		c.addSymbol(Symbol.COPPER, Location.INPUT);
+//		c.addSymbol(Symbol.LEAD, Location.INPUT);
+//		c.addSymbol(Symbol.UPGRADE1, Location.CENTER);
+//		this.add(c);
 		
-		//Move Card
-		c = new Card(gameRenderer);
-		c.addSymbol(Symbol.MOVE_LEFT, Location.CENTER);
-		c.addSymbol(Symbol.MOVE_RIGHT, Location.CENTER);
-		this.add(c);
+//		//Move Card
+//		c = new Card(gameRenderer);
+//		c.addSymbol(Symbol.MOVE_LEFT, Location.CENTER);
+//		c.addSymbol(Symbol.MOVE_RIGHT, Location.CENTER);
+//		this.add(c);
+//		
+//		c = new Card(gameRenderer);
+//		c.addSymbol(Symbol.GHOST, Location.CENTER);
+//		this.add(c);
 		
+//		c = new Card(gameRenderer);
+//		c.addSymbol(Symbol.GHOST, Location.CENTER);
+//		this.add(c);
+//		
 		c = new Card(gameRenderer);
 		c.addSymbol(Symbol.GHOST, Location.CENTER);
 		this.add(c);
@@ -221,6 +358,27 @@ public class Deck {
 		c.addSymbol(Symbol.COPPER, Location.CENTER);
 		c.addSymbol(Symbol.GHOST, Location.RIGHT);
 		this.add(c);
+//		
+//		c = new Card(gameRenderer);
+//		c.addSymbol(Symbol.SILVER, Location.INPUT);
+//		c.addSymbol(Symbol.COPPER, Location.CENTER);
+//		c.addSymbol(Symbol.COPPER, Location.CENTER);
+//		c.addSymbol(Symbol.COPPER, Location.CENTER);
+//		this.add(c);
+//		
+//		c = new Card(gameRenderer);
+//		c.addSymbol(Symbol.LEAD, Location.INPUT);
+//		c.addSymbol(Symbol.COPPER, Location.INPUT);
+//		c.addSymbol(Symbol.COPPER, Location.INPUT);
+//		c.addSymbol(Symbol.SILVER, Location.CENTER);
+//		this.add(c);
+//		
+//		c = new Card(gameRenderer);
+//		c.addSymbol(Symbol.LEAD, Location.INPUT);
+//		c.addSymbol(Symbol.LEAD, Location.INPUT);
+//		c.addSymbol(Symbol.COPPER, Location.CENTER);
+//		c.addSymbol(Symbol.COPPER, Location.CENTER);
+//		this.add(c);
 	}
 
 	

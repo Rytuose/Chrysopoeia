@@ -16,7 +16,6 @@ public class UpgradeOption extends Actor {
 	private UpgradeCard upgradeCard,upgradeResult;
 	private Card card,upgradeQualities;
 	private UpgradeButton upgradeButton;
-	private boolean newCard;
 	private int cardAmount;
 	
 	
@@ -26,7 +25,6 @@ public class UpgradeOption extends Actor {
 		
 		gameRenderer = gr;
 		deck = d;
-		newCard = false;
 		upgradeCard = new UpgradeCard(gr);
 		upgradeResult = new UpgradeCard(gr);
 		
@@ -47,7 +45,7 @@ public class UpgradeOption extends Actor {
 				this.getY() + ((this.getHeight() - Constants.cardUpgradeHeight) * Constants.cardOptionLowerRatio - upgradeButton.getHeight())/2);
 	}
 	
-	public void setOptions(int level) {
+	public void setOptions(int level, boolean isUpgrade) {
 		
 		upgradeCard.setVisible(true);
 		upgradeCard.toFront();
@@ -59,7 +57,7 @@ public class UpgradeOption extends Actor {
 		
 		card = deck.randomUgradeCard();
 		
-		if(card == null || newCard) {
+		if(card == null || !isUpgrade) {
 			cardAmount = 1;
 			//return;
 		}
@@ -90,10 +88,6 @@ public class UpgradeOption extends Actor {
 		
 		upgradeButton.toFront();
 		
-	}
-	
-	public void setNewCard(boolean nc) {
-		newCard = nc;
 	}
 	
 	public void select() {

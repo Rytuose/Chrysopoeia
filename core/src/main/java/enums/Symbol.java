@@ -18,9 +18,9 @@ public enum Symbol {
 	LEAD_OR_COPPER(-1),
 	COPPER(2),
 	COPPER_OR_SILVER(-1),
-	SILVER(3),
+	SILVER(5), //Was 3
 	SILVER_OR_GOLD(-1),
-	GOLD(4),
+	GOLD(9), //Was 4, Then 8
 	
 	//Effects that require prompts
 	DISCARD(-2),
@@ -29,7 +29,10 @@ public enum Symbol {
 	MOVE_RIGHT(-2),
 	UPGRADE1(-2),
 	UPGRADE2(-2),
-	UPGRADE3(-2);
+	UPGRADE3(-2),
+	NEW_CARD1(-2),
+	NEW_CARD2(-2),
+	NEW_CARD3(-2);
 
 	
 	private final int value;

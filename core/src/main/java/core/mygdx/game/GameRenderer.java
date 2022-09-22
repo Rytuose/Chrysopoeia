@@ -30,7 +30,7 @@ import enums.GameStatus;
 import enums.Symbol;
 
 public class GameRenderer extends Stage {
-
+	
 	private Button confirmButton;
 	private int turnCounter;
 	private LinkedList<Symbol> symbolQueue;
@@ -340,13 +340,22 @@ public class GameRenderer extends Stage {
 			//processSymbolQueue();
 			break;
 		case UPGRADE1:
-			startUpgrade(1);
+			startUpgrade(1,true);
 			break;
 		case UPGRADE2:
-			startUpgrade(2);
+			startUpgrade(2,true);
 			break;
 		case UPGRADE3:
-			startUpgrade(3);
+			startUpgrade(3,true);
+			break;
+		case NEW_CARD1:
+			startUpgrade(1,false);
+			break;
+		case NEW_CARD2:
+			startUpgrade(2,false);
+			break;
+		case NEW_CARD3:
+			startUpgrade(3,false);
 			break;
 		default:
 			processSymbolQueue();
@@ -402,12 +411,12 @@ public class GameRenderer extends Stage {
 		processSymbolQueue();
 	}
 
-	private void startUpgrade(int level) {
+	private void startUpgrade(int level, boolean isUpgrade) {
 		GameStatus.gamestatus = GameStatus.UPGRADING;
 		transparentLayer.setVisible(true);
 		upgradeWindow.toFront();
 		upgradeWindow.setVisible(true);
-		upgradeWindow.setOptions(level);
+		upgradeWindow.setOptions(level, isUpgrade);
 		viewButton.setVisible(true);
 		viewButton.toFront();
 	}

@@ -74,8 +74,6 @@ private boolean isFirst;
 		super.enter(event, x, y, pointer, fromActor);
 		
 		if(card.getStage() instanceof GameRenderer) {
-			
-			Vector3 newCoords = card.getStage().getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 
 			if(pointer == -1 && this.isOver()) {
 				card.enter();
@@ -108,8 +106,9 @@ private boolean isFirst;
 		if((!card.getActions().contains(ra, false) && GameStatus.gamestatus == GameStatus.PLAYING)) {
 			
 			//If not prompting make the card follow the mouse
-			float deltaX = Gdx.input.getX()/Constants.widthRatio() -card.getSprite().getX();
-			float deltaY = Constants.game_height - Gdx.input.getY()/Constants.widthRatio()  - card.getSprite().getY();
+			float deltaX = Gdx.input.getX()/Constants.getRatio() -card.getSprite().getX();
+			float deltaY = Constants.game_height - Gdx.input.getY()/Constants.getRatio()  - card.getSprite().getY();
+			//Constants.game_height - Gdx.input.getY()/Constants.widthRatio()  - card.getSprite().getY();
 			ra.setAction(new FollowAction(deltaX,deltaY));
 			ra.setCount(RepeatAction.FOREVER);
 			card.addAction(ra);

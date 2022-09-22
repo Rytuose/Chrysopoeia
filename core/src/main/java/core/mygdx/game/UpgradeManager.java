@@ -1,6 +1,7 @@
 package core.mygdx.game;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import enums.CardType;
@@ -14,12 +15,18 @@ public class UpgradeManager {
 			Symbol.COPPER_OR_SILVER, Symbol.SILVER, Symbol.SILVER_OR_GOLD, Symbol.GOLD};
 	private static Location[] locations = {Location.LEFT, Location.CENTER, Location.RIGHT};
 	private static Symbol[] upgradeOrder = {Symbol.UPGRADE1, Symbol.UPGRADE2, Symbol.UPGRADE3};
+	private static Symbol[] newCardOrder = {Symbol.NEW_CARD1, Symbol.NEW_CARD2, Symbol.NEW_CARD3}; 
+	private static CardType[] cardTypes = {CardType.PRODUCTION, CardType.TRADE, CardType.UPGRADE, CardType.UTILITY};
+	
+	public static double prob1, prob2;
+	
+	public static HashMap<String,Integer> cardRatio = new HashMap<String,Integer>(); 
+	
 	
 	public static void createUpgrade(UpgradeCard card, UpgradeCard result, int level) {
 		result.resetCard();
 		result.copyCard(card);
 		CardType type = getCardType(card);
-		
 		switch(type) {
 		case PRODUCTION:
 			upgradeProduction(result,level);
@@ -36,31 +43,24 @@ public class UpgradeManager {
 		case UTILITY:
 			break;
 		}
-//		
-//		result.addSymbol(Symbol.LEAD, Location.INPUT);
-//		result.addSymbol(Symbol.COPPER, Location.CENTER);
+		
+		UpgradeManager.simplifyCard(card, Symbol.GOLD);
 	}
 	
 	private static CardType getCardType(Card c) {
-		
 		if(c.getCenterOutput().contains(Symbol.REFRESH4) || c.getCenterOutput().contains(Symbol.REFRESH5)) {
 			return CardType.REDRAW;
 		}
-		
-
 		if(c.getCenterOutput().contains(Symbol.UPGRADE1) 
 				|| c.getCenterOutput().contains(Symbol.UPGRADE2) 
 				|| c.getCenterOutput().contains(Symbol.UPGRADE3)) {
 			return CardType.UPGRADE;
 		}
-		
 		for(Symbol s: c.getCenterOutput()) {
 			if(s.getValue() < 0) {
 				return CardType.UTILITY;
 			}
 		}
-		
-
 		if (c.getInput().isEmpty()) {
 			return CardType.PRODUCTION;
 		}
@@ -69,28 +69,69 @@ public class UpgradeManager {
 		}
 	}
 	
-	
 	private static void upgradeProduction(Card card, int level) {
-		/* Options
-		 * 1. Increase Production Amount
-		 * 2. Upgrade Production Quality
-		 * 3? Turn it into a trade card
-		 * 4? Add a direction*/
 		
-		int upgradePoints = level + 1;
 		LinkedList<Location> activeLocations = getActiveLocations(card);
 		
+		int upgradePoints = level/2 + 1;//level + 1;
 		while(upgradePoints > 0) {
-			int option = (int)(Math.random()*2);
-			switch(option) {
-			case 0:
-				upgradePoints = UpgradeManager.addOutput(card,upgradePoints,activeLocations);
-				break;
-			case 1:
-				upgradePoints = UpgradeManager.upgradeOutput(card,upgradePoints,activeLocations);
-				break;
-			}
+			upgradePoints = UpgradeManager.upgradeLocation(card, upgradePoints, activeLocations);
 		}
+//		
+//		//Modern
+//		int upgradePoints = level/2 + 1;//level + 1;
+//		Location location;
+//		while(upgradePoints > 0) {
+//			location = activeLocations.get((int)(Math.random() * activeLocations.size()));
+//			double probability = (card.getLocation(location).size() <= 2)?.253:.8;
+////			int option = (int)(Math.random()*100);
+////			switch(option) {
+////			case 0:
+////				if(card.getLocation(location).size() < 4) {
+////					upgradePoints = UpgradeManager.addLead(card,upgradePoints, location);
+////					break;
+////				}
+////			case 1:
+////				upgradePoints = UpgradeManager.mergeOutput(card, upgradePoints, location);
+////				break;
+////			}
+//			if(Math.random() < probability && card.getLocation(location).size() < 4) {
+//				upgradePoints = UpgradeManager.addLead(card,upgradePoints, location);
+//			}
+//			else {
+//				upgradePoints = UpgradeManager.mergeOutput(card, upgradePoints, location);
+//			}
+//		}
+//		
+//		if(level == 1) {
+//			//System.out.println(card.getLocation(Location.CENTER).toString());
+//			
+//			String key = card.getLocation(Location.CENTER).toString();
+//			
+//			if(cardRatio.containsKey(key)) {
+//				cardRatio.put(key, cardRatio.get(key)+1);
+//			}
+//			else {
+//				cardRatio.put(key, 1);
+//			}
+//		}
+
+		//int upgradePoints = (level+1)/2 + 1;
+	
+		
+		//Classic
+//		int upgradePoints = level + 1;
+//		while(upgradePoints > 0) {
+//			int option = (int)(Math.random()*2);
+//			switch(option) {
+//			case 0:
+//				upgradePoints = UpgradeManager.addOutput(card, upgradePoints,activeLocations);
+//				break;
+//			case 1:
+//				upgradePoints = UpgradeManager.upgradeOutput(card,upgradePoints,activeLocations);
+//				break;
+//			}
+//		}
 	}
 	
 	private static void upgradeRedraw(Card card, int level) {
@@ -117,17 +158,51 @@ public class UpgradeManager {
 	private static void upgradeTrade(Card card, int level) {
 		int upgradePoints = level + 1;
 		LinkedList<Location> activeLocations = getActiveLocations(card);
-		while(upgradePoints > 0) {
-			int option = (int)(Math.random()*2);
-			switch(option) {
-			case 0:
-				upgradePoints = UpgradeManager.addOutput(card, upgradePoints,activeLocations);
-				break;
-			case 1:
+		
+		int outputSize = 0;
+		for(Location loc : activeLocations) {
+			outputSize += card.getLocation(loc).size();
+		}
+		
+		int cardType = card.getInput().size() - outputSize;
+		
+		while (upgradePoints > 0) {
+			if(cardType < 0) {
+				//Split
+				upgradePoints = UpgradeManager.upgradeLocation(card, upgradePoints, activeLocations);
+			}
+			else if(cardType > 0) {
+				//Merge
 				upgradePoints = UpgradeManager.reduceInput(card, upgradePoints, activeLocations);
 			}
+			else {
+				//Transfer
+				if(Math.random() < .5) {
+					upgradePoints = UpgradeManager.upgradeLocation(card, upgradePoints, activeLocations);
+				}
+				else{
+					upgradePoints = UpgradeManager.reduceInput(card, upgradePoints, activeLocations);
+				}
+			}
+			
+			if(card.getInput().isEmpty()) {
+				UpgradeManager.addLead(card, upgradePoints, Location.INPUT);
+				UpgradeManager.mergeOutput(card, upgradePoints, activeLocations.get((int)(Math.random() * activeLocations.size())));
+			}
+			//Add if clause when card turns into a production card
 		}
-		UpgradeManager.reduceTrade(card);
+		
+//		while(upgradePoints > 0) {
+//			int option = (int)(Math.random()*2);
+//			switch(option) {
+//			case 0:
+//				upgradePoints = UpgradeManager.addOutput(card, upgradePoints,activeLocations);
+//				break;
+//			case 1:
+//				upgradePoints = UpgradeManager.reduceInput(card, upgradePoints, activeLocations);
+//			}
+//		}
+//		UpgradeManager.reduceTrade(card);
 		
 		
 	}
@@ -135,22 +210,127 @@ public class UpgradeManager {
 	private static void upgradeUpgrade(Card card, int level) {
 		int upgradePoints = level + 1;
 		LinkedList<Location> activeLocations = getActiveLocations(card);
+		
+		int totalValue = 0;
+		for(Symbol s: card.getInput()) {
+			for(int i = 0; i <expandedSymbolOrder.length; i++) {
+				if(expandedSymbolOrder[i] == s) {
+					totalValue += (i/2)+1;
+				}
+			}
+		}
+		
+		System.out.println("Total Value = " + totalValue + " upgradePoints = " + upgradePoints );
+		
 		while(upgradePoints > 0) {
-			int option = (int)(Math.random()*2);
+			int option = (int)(Math.random()*3);
 			switch(option) {
 			case 0:
-				while(upgradePoints > 0) {
-					upgradePoints = UpgradeManager.reduceInput(card, upgradePoints,activeLocations);
+				if(totalValue >= upgradePoints) {
+					while(upgradePoints > 0) {
+						upgradePoints = UpgradeManager.reduceInput(card, upgradePoints,activeLocations);
+					}
+					return;
 				}
-				return;
 			case 1:
+				//NOTHING
+			case 2:
 				upgradePoints = UpgradeManager.upgradeUpgradeQuality(card, upgradePoints, activeLocations);
 				break;
 			}
 		}
 	}
 
-
+	
+	/*------------------------------HELPER FUNCTIONS------------------------------*/
+	
+	private static int addLead(Card card, int value, Location location) {
+		if(card.getLocation(location).contains(Symbol.GHOST)) {
+			card.addSymbol(Symbol.GHOST, location);
+			return value-1;
+		}
+		card.addSymbol(Symbol.LEAD, location);
+		return value - 1;
+	}
+	
+	private static int mergeOutput(Card c, int value, Location location) {
+		/*
+		 * L -> C
+		 * CC -> S
+		 * SC -> G
+		 */
+		ArrayList<Symbol> storage = c.getLocation(location);
+		ArrayList<Integer> mergePositions = new ArrayList<Integer>();
+		ArrayList<Symbol> mergeSymbols = new ArrayList<Symbol>();
+		Symbol s;
+		boolean hasCopper = false;
+		int leadCount = 0;
+		
+		for(int i = 0 ; i < storage.size() ; i++) {
+			s = storage.get(i);
+			switch(s) {
+			case LEAD:
+				mergePositions.add(i);
+				if(!mergeSymbols.contains(s)) {
+					mergeSymbols.add(s);
+					mergeSymbols.add(s);
+				}
+				break;
+			case COPPER:
+				if((i + 1 < storage.size() && storage.get(i + 1)==Symbol.COPPER) ||
+						(i - 1 >= 0 && storage.get(i - 1) == Symbol.COPPER)) {
+					mergePositions.add(i);
+					if(!mergeSymbols.contains(s)) {
+						mergeSymbols.add(s);
+					}
+				}
+				hasCopper = true;
+				break;
+			case SILVER:
+				if(hasCopper) {
+					if(!mergeSymbols.contains(s)) {
+						mergeSymbols.add(s);
+					}
+					mergePositions.add(i);
+//					storage.remove(Symbol.SILVER);
+//					storage.remove(Symbol.COPPER);
+//					storage.add(Symbol.GOLD);
+//					return value-1;
+				}
+				break;
+			}
+		}
+		
+		if(mergePositions.isEmpty() || mergeSymbols.isEmpty()) {
+			return UpgradeManager.addLead(c, value, location);
+		}
+		
+		
+		//s = storage.get(mergePositions.get((int)(Math.random() * mergePositions.size())));
+		s = mergeSymbols.get((int)(Math.random() * mergeSymbols.size()));
+		
+		switch(s) {
+		case LEAD:
+			storage.remove(Symbol.LEAD);
+			storage.add(Symbol.COPPER);
+			break;
+		case COPPER:
+			storage.remove(Symbol.COPPER);
+			storage.remove(Symbol.COPPER);
+			storage.add(Symbol.SILVER);
+			break;
+		case SILVER:
+			storage.remove(Symbol.SILVER);
+			storage.remove(Symbol.COPPER);
+			storage.add(Symbol.GOLD);
+			break;
+		}
+		
+		storage.sort(null);
+		
+		return value - 1;
+	}
+	
 	private static LinkedList<Location> getActiveLocations(Card card){
 		LinkedList<Location> activeLocations = new LinkedList<Location>();
 		if(!card.getLeftOutput().isEmpty()) {
@@ -166,7 +346,18 @@ public class UpgradeManager {
 	}
 	
 	private static int addOutput(Card card, int value, LinkedList<Location> activeLocations) { 
-		value -= addRandomSymbol(card, value, activeLocations.get((int)(Math.random() * activeLocations.size())));
+		LinkedList<Location> validLocations = new LinkedList<Location>();
+		for(Location loc:activeLocations) {
+			if(card.getLocation(loc).size() < 4) {
+				validLocations.add(loc);
+			}
+		}
+		
+		if(validLocations.isEmpty()) {
+			return value;
+		}
+		
+		value -= addRandomSymbol(card, value, validLocations.get((int)(Math.random() * validLocations.size())));
 		return value;
 	}
 	
@@ -180,42 +371,23 @@ public class UpgradeManager {
 		return value;
 	}
 	
-	private static int upgradeOutput(Card card, int value, LinkedList<Location> activeLocations) {
-		ArrayList<Symbol> totalOutput = card.getAllOutput();
-		int randPos = (int)(Math.random() * totalOutput.size());
+	private static int upgradeLocation(Card card, int upgradePoints, LinkedList<Location> locations) {
 		
-		for(Location loc:activeLocations) {
-			if(randPos > card.getLocation(loc).size()) {
-				randPos -= card.getLocation(loc).size();
-			}
-			else {
-				Symbol s = card.getLocation(loc).get(randPos);
-				if(s == Symbol.GOLD) {
-					int newValue = UpgradeManager.addOutput(card, value, activeLocations);
-					return newValue;
-				}
-				if(s == Symbol.GHOST) {
-					card.getLocation(loc).add(Symbol.GHOST);
-					card.getLocation(loc).sort(null);
-					return value - 1;
-				}
-				
-				System.out.println("Upgrading " + s);
-				card.getLocation(loc).remove(s);
-				card.getLocation(loc).add(symbolOrder[s.getValue()]);
-				card.getLocation(loc).sort(null);
-				return value - 1;
-			}
-		}		
-		
-		return value;
+		Location location = locations.get((int)(Math.random() * locations.size()));
+		double probability = (card.getLocation(location).size() <= 2)?.253:.8;
+		if(Math.random() < probability && card.getLocation(location).size() < 4) {
+			return UpgradeManager.addLead(card,upgradePoints, location);
+		}
+		else {
+			return UpgradeManager.mergeOutput(card, upgradePoints, location);
+		}
 	}
 	
 	private static int reduceInput(Card card, int value, LinkedList<Location> activeLocations) {
 		ArrayList<Symbol> input = card.getInput();
 		if(input.isEmpty() /*|| (input.size() == 1 && input.get(0) == Symbol.LEAD)*/) {
 			//return value; //Shouldn't matter
-			return UpgradeManager.addOutput(card, value, activeLocations);
+			return UpgradeManager.upgradeLocation(card, value, activeLocations);
 		}
 		
 		int randPos = (int)(Math.random() * input.size());
@@ -230,9 +402,20 @@ public class UpgradeManager {
 		}
 		
 		input.remove(randPos);
-		if(pos > 0) {
-			input.add(randPos, expandedSymbolOrder[pos -1]);
+		
+		pos--;
+		if(s.getValue() < 0 || Math.random() > .1) {
+			pos--;
+//			if(Math.random() < .5) {
+//				pos--;
+//			}
 		}
+		
+		if(pos >= 0) {
+			input.add(randPos, expandedSymbolOrder[pos]);
+		}
+			
+		input.sort(null);
 		
 		return value - 1;
 	}
@@ -269,7 +452,6 @@ public class UpgradeManager {
 		}		
 	}
 	
-	
 	private static int upgradeUpgradeQuality(Card card, int value, LinkedList<Location> activeLocations) {
 		System.out.println("Upgrade Upgrade");
 		ArrayList<Symbol> output = card.getCenterOutput();
@@ -280,9 +462,52 @@ public class UpgradeManager {
 				if(symbol == upgradeOrder[j] && symbol != Symbol.UPGRADE3) {
 					System.out.println("FOUND " + symbol);
 					output.remove(symbol);
+					output.remove(i); //ERROR HERE, Out of boutnd index 1 for upgrade 2->3
 					output.add(upgradeOrder[j+1]);
+					output.add(newCardOrder[j+1]);
 					output.sort(null);
-					card.getInput().add(symbolOrder[j+2]);
+					
+					
+					
+					//card.getInput().add(symbolOrder[j+2]);
+					
+					ArrayList<Symbol> input = card.getInput();
+					int points = j+2;
+					
+					if(card.getInput().size() < 3) {
+						//Add a symbol
+						int randInt = (int)(Math.random()*points);
+						input.add(symbolOrder[randInt]);
+						points -= randInt+1;
+					}
+					
+					while(points > 0) {
+						int randint = (int)(Math.random() * input.size());
+						Symbol s = input.get(randint);
+						for(int k = 0; k < expandedSymbolOrder.length-1; k++) {
+							if(expandedSymbolOrder[k] == s) {
+								input.remove(s);
+								if(k+2 < expandedSymbolOrder.length) {
+									input.add(expandedSymbolOrder[k+2]);
+								}
+								else {
+									input.add(expandedSymbolOrder[k+1]);
+								}
+								points --;
+								break;
+							}
+						}
+						
+						
+						for(int k = 0; k<expandedSymbolOrder.length-1; k++) {
+							if(expandedSymbolOrder[k] == s) {
+								
+							}
+						}
+					}
+					
+					input.sort(null);
+					
 					return 0;
 				}
 			}
@@ -293,6 +518,7 @@ public class UpgradeManager {
 	}
 
 	
+	
 	/*================================CARD GENERATION================================*/
 	
 	public static void newCard(Card upgradeCard, int level) {
@@ -300,22 +526,301 @@ public class UpgradeManager {
 		int netValue = level + 2;
 		int symbolPos = (int)(Math.random() * (symbolOrder.length + 1));
 		
-		if(symbolPos < symbolOrder.length) {
-			upgradeCard.addSymbol(symbolOrder[symbolPos], Location.INPUT);
-			netValue += symbolPos + 1;
-		}
-		
 		System.out.println("Upgrade Numbers " + netValue + " " + symbolPos + " " + level);
 		
-		while(netValue > 0) {
-//			netValue -= addRandomSymbol(upgradeCard, netValue,
-//					locations[(int)(Math.random() * locations.length)]);
-			netValue -= addRandomSymbol(upgradeCard, netValue,Location.CENTER);
+		
+		int randNum = (int)(Math.random()*100);
+		
+		if(randNum < 50) {
+			//Production
+			UpgradeManager.createProduction(upgradeCard,level);
+		}
+		else if(randNum < 100) {
+			//Trade
+			UpgradeManager.createTrade(upgradeCard, level);
+		}
+		else if(randNum < 75) {
+			//Upgrade (Should have a separate method to create these)
+		}
+		else {
+			//Utility
 		}
 		
-		reduceTrade(upgradeCard);
-		
-		
 	}
+	
+	private static void createProduction(Card upgradeCard, int level) {
+		int netValue = level + 2;
+		
+		ArrayList<Location> locations = UpgradeManager.createOutputShapes(upgradeCard);
+		
+		for(Location loc: locations) {
+			netValue = UpgradeManager.addLead(upgradeCard, netValue, loc);
+		}
+		
+		LinkedList<Location> activeLocations = getActiveLocations(upgradeCard);
+		while(netValue > 0) {
+			Location location = activeLocations.get((int)(Math.random() * activeLocations.size()));
+			if(Math.random() < .5 && upgradeCard.getLocation(location).size() < 4) {
+				netValue =  UpgradeManager.addLead(upgradeCard,netValue, location);
+			}
+			else {
+				netValue =  UpgradeManager.mergeOutput(upgradeCard, netValue, location);
+			}
+			//netValue = UpgradeManager.upgradeLocation(upgradeCard, netValue, activeLocations);
+		}
+
+	}
+	
+	private static int createOutputShape(Card upgradeCard, int netValue) {
+		double prob = .9;
+		
+		if(Math.random() < .75) {
+			netValue = UpgradeManager.addLead(upgradeCard, netValue, Location.CENTER);
+			prob = .05;
+		}
+		
+		if(Math.random() < prob && netValue > 0) {
+			netValue = UpgradeManager.addLead(upgradeCard, netValue, Location.LEFT);
+		}
+		
+		if(Math.random() < prob && netValue > 0) {
+			netValue = UpgradeManager.addLead(upgradeCard, netValue, Location.RIGHT);
+		}
+		
+		if(upgradeCard.getAllOutput().isEmpty()) {
+			netValue = UpgradeManager.addLead(upgradeCard, netValue, Location.CENTER);
+		}
+		
+		return netValue;
+	}
+	
+	private static ArrayList<Location> createOutputShapes(Card upgradeCard) {
+		double prob = .9;
+		ArrayList<Location> positions = new ArrayList<Location>();
+		
+		if(Math.random() < .8) {
+			positions.add(Location.CENTER);
+		}
+		else {
+			positions.add(Location.LEFT);
+			positions.add(Location.RIGHT);
+		}
+		
+		return positions;
+	}
+	
+	private static void createTrade(Card upgradeCard, int level) {
+		
+		int netValue;//= level + 2;
+		if(Math.random() < 1) {
+			//Merge and Split
+			int rand = (level == 1)?(int)(Math.random()*3)+1:(int)(Math.random()*5)+1; //(1,2,or 3)
+			switch(level) {
+			case 1:
+				rand = (int)(Math.random()*4)+1;
+				break;
+			case 2:
+				rand = (int)(Math.random()*7)+1;
+				break;
+			case 3:
+				rand = (int)(Math.random()*6)+2;
+				break;
+			}
+			
+			Symbol mainSymbol = symbolOrder[(rand+1)/3 + 1];
+			netValue = mainSymbol.getValue() - level + 1;
+			
+			if(Math.random() < .5) {
+				//Split
+				netValue = mainSymbol.getValue() + level - 1;
+				upgradeCard.addSymbol(mainSymbol,Location.INPUT);
+				UpgradeManager.createTradeSplitHelper(upgradeCard, mainSymbol, netValue);
+			}
+			else {
+				//Merge
+				netValue = mainSymbol.getValue() - level + 1;
+				upgradeCard.addSymbol(mainSymbol, Location.CENTER);
+				UpgradeManager.createTradeMergeHelper(upgradeCard, mainSymbol, netValue);
+			}
+			
+		}
+		else {
+			//Transfer?
+		}
+	}
+	
+	private static void createTradeSplitHelper(Card upgradeCard, Symbol symbol, int netValue) {
+		//Make sure that requirements are lesser value than symbol
+		
+		ArrayList<Location> locations = UpgradeManager.createOutputShapes(upgradeCard);
+		
+		if(locations.size() == 2) {
+			netValue ++;
+		}
+		
+		int maxPos = 1;
+		for(int i = 0 ; i < symbolOrder.length; i++) {
+			if(symbolOrder[i] == symbol) {
+				maxPos = i;
+				break;
+			}
+		}
+		
+		int randPos,limit;
+		while(netValue > 0) {
+			limit = maxPos;
+			for(int i = 0 ; i < maxPos; i++) {
+				if(symbolOrder[i].getValue() > netValue) {
+					limit = i;
+					break;
+				}
+			}
+			randPos = (int)(Math.random() * limit);
+			
+			Location location = locations.get((int)(Math.random() * locations.size()));
+			
+			upgradeCard.addSymbol(symbolOrder[randPos], location);
+			
+			netValue -= symbolOrder[randPos].getValue();
+
+		}
+		
+		ArrayList<Symbol> holder;
+		
+		if(upgradeCard.getLocation(Location.CENTER).isEmpty()) {
+			if(upgradeCard.getLocation(Location.RIGHT).isEmpty()) {
+				System.out.println("Converting Right");
+				holder = upgradeCard.getLocation(Location.LEFT);
+				upgradeCard.getLocation(Location.CENTER).addAll(0, holder);
+				holder.clear();
+			}
+			else if(upgradeCard.getLocation(Location.LEFT).isEmpty()) {
+				System.out.println("Converting Left");
+				holder = upgradeCard.getLocation(Location.RIGHT);
+				upgradeCard.getLocation(Location.CENTER).addAll(0, holder);
+				holder.clear();
+			}
+		}
+		
+		System.out.println("Before --------------" + symbol);
+		System.out.println(upgradeCard.toString());
+		System.out.println("---------------------");
+		
+		UpgradeManager.simplifyCard(upgradeCard, symbol);
+	}
+	
+	private static void createTradeMergeHelper(Card upgradeCard, Symbol symbol, int netValue) {
+		//Location = Input (We can have half metals)
+		
+		ArrayList<Symbol> input = upgradeCard.getLocation(Location.INPUT);
+		
+		//Make sure that requirements are lesser value than symbol
+		int maxPos = 1;
+		for(int i = 0 ; i < symbolOrder.length; i++) {
+			if(symbolOrder[i] == symbol) {
+				maxPos = i;
+				break;
+			}
+		}
+		
+		int randPos,limit;
+		while(netValue > 0) {
+			limit = maxPos;
+			for(int i = 0 ; i < maxPos; i++) {
+				if(symbolOrder[i].getValue() > netValue) {
+					limit = i;
+					break;
+				}
+			}
+			randPos = (int)(Math.random() * limit);
+			
+			upgradeCard.addSymbol(symbolOrder[randPos], Location.INPUT);
+			
+			netValue -= symbolOrder[randPos].getValue();
+
+		}
+		
+		System.out.println("Before --------------" + symbol);
+		System.out.println(upgradeCard.toString());
+		System.out.println("---------------------");
+		
+		UpgradeManager.simplifyCard(upgradeCard, symbol);
+		
+		for(int i = 0; i < input.size(); i++) {
+			if(Math.random() < .1) {
+				for(int j = 1 ; j < expandedSymbolOrder.length; j++) {
+					if(expandedSymbolOrder[j] == input.get(i) && j > 0) {
+						input.remove(i);
+						input.add(expandedSymbolOrder[j -1]);
+						input.sort(null);
+					}
+				}
+			}
+		}
+	}
+	
+	private static void mergeToSize(ArrayList<Symbol> arrayList, Symbol maxSymbol, int size) {
+		Symbol s;
+		ArrayList<Symbol> mergeableSymbols = new ArrayList<Symbol>();
+		
+		System.out.println("Merging " + arrayList.toString());
+		
+		while(arrayList.size() > 3) {
+			boolean hasLead = false;
+			mergeableSymbols.clear();
+			
+			for(int i = 0 ; i < arrayList.size(); i++) {
+				s = arrayList.get(i);
+				switch(s) {
+				case LEAD:
+					if((i - 1 > 0 && arrayList.get(i-1) == Symbol.LEAD) && maxSymbol != Symbol.COPPER) {
+						if(!mergeableSymbols.contains(Symbol.LEAD)) {
+							mergeableSymbols.add(Symbol.LEAD);
+						}
+					}
+					hasLead = true;
+					break;
+				case COPPER:
+					if(hasLead && i - 1 > 0 && arrayList.get(i-1) == Symbol.COPPER && maxSymbol != Symbol.SILVER) {
+						if(!mergeableSymbols.contains(Symbol.COPPER)) {
+							mergeableSymbols.add(Symbol.COPPER);
+						}
+					}
+					break;
+				}
+			}
+			
+			if(mergeableSymbols.isEmpty()) {
+				arrayList.sort(null);
+				return;
+			}
+			System.out.println("\tAvailable Symbols " + mergeableSymbols.toString());
+			
+			switch(mergeableSymbols.get((int)(Math.random() * mergeableSymbols.size()))) {
+			case LEAD:
+				arrayList.remove(Symbol.LEAD);
+				arrayList.remove(Symbol.LEAD);
+				arrayList.add(Symbol.COPPER);
+				break;
+			case COPPER:
+				arrayList.remove(Symbol.LEAD);
+				arrayList.remove(Symbol.COPPER);
+				arrayList.remove(Symbol.COPPER);
+				arrayList.add(Symbol.SILVER);
+				break;
+			}
+			
+			arrayList.sort(null);
+			System.out.println("\t\t " + arrayList.toString());
+		}
+	}
+	
+	public static void simplifyCard(Card upgradeCard, Symbol maxSymbol) {
+		UpgradeManager.mergeToSize(upgradeCard.getLocation(Location.INPUT), maxSymbol, 4);
+		UpgradeManager.mergeToSize(upgradeCard.getLocation(Location.LEFT), maxSymbol, 3);
+		UpgradeManager.mergeToSize(upgradeCard.getLocation(Location.CENTER), maxSymbol, 4);
+		UpgradeManager.mergeToSize(upgradeCard.getLocation(Location.RIGHT), maxSymbol, 3);
+	}
+	
 	
 }

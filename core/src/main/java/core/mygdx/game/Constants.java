@@ -15,6 +15,7 @@ public class Constants {
 
 	public static float widthRatio() {return ((float)Gdx.graphics.getWidth())/game_width;}
 	public static float heightRatio() {return ((float)Gdx.graphics.getHeight())/game_height;}
+	public static float getRatio() {return(widthRatio() < heightRatio())?widthRatio():heightRatio();}
 	
 	public static final int cardWidth = 150;
 	public static final int cardHeight = 210;
@@ -104,5 +105,8 @@ public class Constants {
 	public static final int deckConfirmXGap = Constants.scrollBarWidth 
 			+ Constants.scrollBarXGap*2;
 	public static final int deckConfirmYGap = 25;
+	
+	public static final int upgradeExitWidth = 100;
+	public static final int upgradeExitHeight = 25;
 
 }

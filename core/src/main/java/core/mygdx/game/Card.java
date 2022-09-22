@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Align;
 
 import enums.GameStatus;
@@ -229,6 +230,16 @@ public class Card extends GameActor {
 		totalSymbols.sort(null);
 		return totalSymbols;
 	}
+	
+	@Override
+	public String toString() {
+		return "Input " + input.toString() + "\n" +
+				"Left " + leftOutput.toString() + "\n" +
+				"Center " + centerOutput.toString() + "\n" +
+				"Right " + rightOutput.toString();
+	}
+	
+	public Vector3 unproject(Vector3 vect3) {return gameRenderer.getCamera().unproject(vect3);}
 	
 	public void upgrade() {level++;}
 	
