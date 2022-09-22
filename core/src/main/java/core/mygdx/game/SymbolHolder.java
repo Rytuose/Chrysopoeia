@@ -29,11 +29,15 @@ public class SymbolHolder extends GameActor {
 			@Override
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 				super.touchUp(event, x, y, pointer, button);
-				if(range.contains(Gdx.input.getX(),(Constants.game_height-Gdx.input.getY()))) {
-					if(!gameRenderer.isViewOnly()) {
-						storageContainer.select(position);
-					}
+				System.out.println("Touch Up");
+				if(!gameRenderer.isViewOnly() && this.isOver()) {
+					storageContainer.select(position);
 				}
+//				if(range.contains(Gdx.input.getX(),(Constants.game_height-Gdx.input.getY()))) {
+//					if(!gameRenderer.isViewOnly()) {
+//						storageContainer.select(position);
+//					}
+//				}
 			}
 		});
 		

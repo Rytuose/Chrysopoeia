@@ -28,6 +28,11 @@ public class ImageSearcher {
 //			cardSymbolMap.put(symbol, texture);
 //			return texture;
 //		}
+//		if(symbol == Symbol.GHOST) {
+//			Texture texture = new Texture(Gdx.files.internal("Images/GHOST_KNIGHT.png"));
+//			cardSymbolMap.put(symbol, texture);
+//			return texture;
+//		}
 		
 		String pathname = "Images/" + symbol.toString() + ".png";
 		Texture texture;
@@ -50,6 +55,12 @@ public class ImageSearcher {
 		if(selectedCardSymbolMap.containsKey(symbol)) {
 			return selectedCardSymbolMap.get(symbol);
 		}
+		
+//		if(symbol == Symbol.GHOST) {
+//			Texture texture = new Texture(Gdx.files.internal("Images/GHOST_KNIGHT_CHECK.png"));
+//			selectedCardSymbolMap.put(symbol, texture);
+//			return texture;
+//		}
 		
 		String pathname = "Images/" + symbol.toString() + "_CHECK.png";
 		Texture texture;
