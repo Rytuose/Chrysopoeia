@@ -7,9 +7,14 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 
 import enums.GameStatus;
 
+/**
+ * 
+ * Represents the cards accessable by the player
+ *
+ */
 public class Hand {
 
-	private static int handSize = 5;
+	private static int handSize = 7;
 	
 	private ArrayList<Card> hand;
 	private Deck deck;
@@ -32,6 +37,9 @@ public class Hand {
 		hand.remove(pos);
 	}
 	
+	/**
+	 * Discards hand and draws given amount of cards
+	 */
 	public void drawStartingHand(int cardToDraw) {
 		while(hand.size() > 1) {
 			deck.toDiscard(hand.get(1));
@@ -54,6 +62,9 @@ public class Hand {
 				
 	}
 	
+	/**
+	 * Draws a random card from the deck
+	 */
 	public void drawCard() {
 		if (hand.size() < handSize) {
 			Card c = deck.draw();
@@ -65,8 +76,13 @@ public class Hand {
 			Card c = deck.draw();
 			deck.toDiscard(c);
 		}
+		
+		this.setHand();
 	}
 	
+	/**
+	 * Draws a specific card c
+	 */
 	public void drawCard(Card c) {
 		deck.getDeck().remove(c);
 		deck.getDiscard().remove(c);
@@ -76,7 +92,9 @@ public class Hand {
 		c.setTouchable(Touchable.enabled);
 	}
 	
-	
+	/**
+	 * Puts the cards in the hand in the right position
+	 */
 	public void setHand() {
 		int middle = Constants.game_width/2;
 		int totalLength = (int) (hand.size() * Constants.cardWidth * 

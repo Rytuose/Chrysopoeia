@@ -4,6 +4,10 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+/**
+ * A listener that is behind the game in order to process clicks that don't click
+ * on anything
+ */
 public class BackgroundListener extends Actor {
 
 	//====================================FIELDS==========================================
@@ -14,10 +18,6 @@ public class BackgroundListener extends Actor {
 	
 	//==================================CONSTRUCTORS======================================
 	
-	/**
-	 * 
-	 * @param br The battle renderer which the actor will listen to
-	 */
 	public BackgroundListener(GameRenderer gr) {
 		gameRenderer = gr;
 		setBounds(0,0,gr.getWidth(), gr.getHeight());

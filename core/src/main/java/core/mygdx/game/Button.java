@@ -5,11 +5,20 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+/**
+ * 
+ * A class that represents a button and uses two textures instead of a skin
+ *
+ */
 public abstract class Button extends GameActor {
 	
 	private Texture normalTexture,hoverTexture;
 	private boolean touchDown;
 	
+	/**
+	 * @param nt The normal texture
+	 * @param ht The texture when clicked
+	 */
 	public Button(Texture nt, Texture ht) {
 		super();
 		normalTexture = nt;
@@ -57,6 +66,9 @@ public abstract class Button extends GameActor {
 		});
 	}
 	
+	/**
+	 * What the button does when the button is clicked
+	 */
 	public abstract void click();
 	
 	

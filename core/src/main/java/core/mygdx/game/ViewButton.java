@@ -6,6 +6,11 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+/**
+ * 
+ * Allows the player to view the board when there is a prompt or upgrade window
+ *
+ */
 public class ViewButton extends Button {
 
 	private GameRenderer gameRenderer;

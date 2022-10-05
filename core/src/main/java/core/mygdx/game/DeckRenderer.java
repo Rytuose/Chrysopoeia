@@ -19,6 +19,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
+/**
+ * 
+ * A Stage that can show an collection (LinkedList) of
+ * cards
+ *
+ */
 public class DeckRenderer extends Stage {
 
 	private boolean isPrompt;
@@ -128,6 +134,9 @@ public class DeckRenderer extends Stage {
 		getBatch().end();
 	}
 	
+	/**
+	 * Return to the previous stage
+	 */
 	private void exit() {
 		if(isPrompt) {
 			gameRenderer.finishPrompt(viewingCard);
@@ -144,6 +153,11 @@ public class DeckRenderer extends Stage {
 		game.changeToGame();
 	}
 	
+	/**
+	 * 
+	 * Change the cards displayed and whether a prompt is requested
+	 * 
+	 */
 	public void update(LinkedList<Card> ctd, boolean ip) {
 		isPrompt = ip;
 		ArrayList<Card> cardsToDisplay = new ArrayList<Card>();

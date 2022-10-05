@@ -9,6 +9,11 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
+/**
+ * 
+ * Represents one out of four possible upgrade options
+ *
+ */
 public class UpgradeOption extends Actor {
 	
 	private GameRenderer gameRenderer;
@@ -41,10 +46,17 @@ public class UpgradeOption extends Actor {
 		upgradeButton = new UpgradeButton(this);
 		gameRenderer.addActor(upgradeButton);
 		upgradeButton.setVisible(false);
-		upgradeButton.setPosition(this.getX() + (this.getWidth() - upgradeButton.getWidth())/2,
-				this.getY() + ((this.getHeight() - Constants.cardUpgradeHeight) * Constants.cardOptionLowerRatio - upgradeButton.getHeight())/2);
+		
+		this.updateUpgradeButton();
+		
+//		upgradeButton.setPosition(this.getX() + (this.getWidth() - upgradeButton.getWidth())/2,
+//				this.getY() + ((this.getHeight() - Constants.cardUpgradeHeight) * Constants.cardOptionLowerRatio - upgradeButton.getHeight())/2);
 	}
 	
+	/**
+	 * Creates an upgrade option if isUpgrade or a new card otherwise
+	 * or if there is no card to upgrade
+	 */
 	public void setOptions(int level, boolean isUpgrade) {
 		
 		upgradeCard.setVisible(true);
@@ -59,21 +71,22 @@ public class UpgradeOption extends Actor {
 		
 		if(card == null || !isUpgrade) {
 			cardAmount = 1;
+			upgradeResult.resetCard();
 			//return;
 		}
 		else {
 			cardAmount = 2;
 		}
 		
-		float cardGap = (this.getWidth() - cardAmount*Constants.cardUpgradeWidth - (cardAmount-1) * Constants.cardUpgradeCenterGap)/2;
-		float cardY = (this.getHeight() - Constants.cardUpgradeHeight) * Constants.cardOptionLowerRatio;
+		//float cardGap = (this.getWidth() - cardAmount*Constants.cardUpgradeWidth - (cardAmount-1) * Constants.cardUpgradeCenterGap)/2;
+		//float cardY = (this.getHeight() - Constants.cardUpgradeHeight) * Constants.cardOptionLowerRatio;
 		
-		upgradeCard.setPosition(this.getX() + cardGap,this.getY() + cardY);
+		//upgradeCard.setPosition(this.getX() + cardGap,this.getY() + cardY);
 
 		if(cardAmount > 1) {
 			upgradeCard.copyCard(card);
-			upgradeResult.setPosition(this.getX() + cardGap + Constants.cardUpgradeWidth + Constants.cardUpgradeCenterGap,
-					this.getY() + cardY);
+			//upgradeResult.setPosition(this.getX() + cardGap + Constants.cardUpgradeWidth + Constants.cardUpgradeCenterGap,
+			//		this.getY() + cardY);
 			UpgradeManager.createUpgrade(upgradeCard, upgradeResult,card.getLevel());
 			upgradeResult.upgrade();
 //			upgradeResult.copyCard(upgradeCard);
@@ -83,13 +96,37 @@ public class UpgradeOption extends Actor {
 		}
 		else {
 			UpgradeManager.newCard(upgradeCard,level);
-			upgradeResult.setVisible(false);
+			//upgradeResult.setVisible(false);
 		}
 		
+		updatePosition();
 		upgradeButton.toFront();
 		
 	}
 	
+	public void updatePosition() {
+		float cardGap = (this.getWidth() - cardAmount*Constants.cardUpgradeWidth - (cardAmount-1) * Constants.cardUpgradeCenterGap)/2;
+		float cardY = (this.getHeight() - Constants.cardUpgradeHeight) * Constants.cardOptionLowerRatio;
+		
+		upgradeCard.setPosition(this.getX() + cardGap,this.getY() + cardY);
+		
+		if(cardAmount > 1) {
+			upgradeResult.setPosition(this.getX() + cardGap + Constants.cardUpgradeWidth + Constants.cardUpgradeCenterGap,
+					this.getY() + cardY);
+		}
+		else {
+			upgradeResult.setVisible(false);
+		}
+	}
+	
+	public void updateUpgradeButton() {
+		upgradeButton.setPosition(this.getX() + (this.getWidth() - upgradeButton.getWidth())/2,
+				this.getY() + ((this.getHeight() - Constants.cardUpgradeHeight) * Constants.cardOptionLowerRatio - upgradeButton.getHeight())/2);
+	}
+	
+	/**
+	 * Confirms and processes the upgrade
+	 */
 	public void select() {
 		if(cardAmount == 1) {
 			Card c = new Card(gameRenderer);
@@ -111,5 +148,11 @@ public class UpgradeOption extends Actor {
 		}
 		upgradeButton.setVisible(isVisible);
 	}
+	
+	public UpgradeCard getUpgradeCard() { return upgradeCard; }
+	
+	public UpgradeCard getUpgradeResult() { return upgradeResult; }
+	
+	public int getCardAmount() { return cardAmount; }
 	
 }

@@ -9,6 +9,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.Align;
 
+/**
+ * 
+ * A window that holds the upgrade options
+ *
+ */
 public class UpgradeWindow extends GameActor {
 
 	private GameRenderer gameRenderer;
@@ -50,12 +55,58 @@ public class UpgradeWindow extends GameActor {
 		exitButton.setVisible(false);
 	}
 	
+	/**
+	 * Sets the options of all upgrade options and removes duplicate upgrades
+	 */
 	public void setOptions(int level, boolean isUpgrade) {
+		System.out.println("Upgradeing level " + -1);
 		deck.resetUpgradeOptions(level);
 		for(UpgradeOption uo: upgradeOptions) {
 			uo.setOptions(level, isUpgrade);
 		}
 		
+		//Prevent Duplicates
+		for(int i = 0; i < upgradeOptions.length; i++) {
+			for(int j = 0; j < i; j++) {
+				if(upgradeOptions[i].getUpgradeCard().equals(upgradeOptions[j].getUpgradeCard()) &&
+						upgradeOptions[i].getUpgradeResult().equals(upgradeOptions[j].getUpgradeResult())) {
+					upgradeOptions[i].setOptions(level, isUpgrade); 
+					j =  -1;
+				}
+			}
+		}
+		
+		for(int i = 0 ; i < upgradeOptions.length - 1; i++) {
+			for(int j = 0; j < upgradeOptions.length - i - 1; j++) {
+				System.out.println("Comparing " + j + " and " + (j+1));
+				if(upgradeOptions[j].getCardAmount() < upgradeOptions[j+1].getCardAmount()) {
+					System.out.println("SWAPPING");
+					
+					UpgradeOption first,second,temp;
+					float tempPos;
+					
+					first = upgradeOptions[j];
+					second = upgradeOptions[j+1];
+					
+					tempPos = first.getX();
+					first.setX(second.getX());
+					second.setX(tempPos);
+					
+					tempPos = first.getY();
+					first.setY(second.getY());
+					second.setY(tempPos);
+					
+					temp = upgradeOptions[j];
+					upgradeOptions[j] = upgradeOptions[j+1];
+					upgradeOptions[j+1] = temp;
+					
+					first.updatePosition();
+					first.updateUpgradeButton();
+					second.updatePosition();
+					second.updateUpgradeButton();
+				}
+			}
+		}
 	}
 	
 	@Override

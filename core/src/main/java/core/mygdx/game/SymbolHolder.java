@@ -8,6 +8,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import enums.Symbol;
 
+/**
+ * 
+ * Holds a symbol allowing the user to interact with it
+ *
+ */
 public class SymbolHolder extends GameActor {
 	
 	private GameRenderer gameRenderer;
