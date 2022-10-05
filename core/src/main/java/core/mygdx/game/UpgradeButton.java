@@ -7,6 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+/**
+ * The confirm button for an upgrade choice
+ */
 public class UpgradeButton extends Button {
 
 	private UpgradeOption upgradeOption;

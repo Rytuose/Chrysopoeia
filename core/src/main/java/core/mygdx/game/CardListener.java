@@ -9,6 +9,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import enums.GameStatus;
 
+/**
+ * 
+ * A listener attatched to a card in order to process input
+ *
+ */
 public class CardListener extends ClickListener {
 
 private boolean isFirst;

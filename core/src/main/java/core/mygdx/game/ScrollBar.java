@@ -5,6 +5,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+/**
+ * 
+ * A scroll bar for deck renderer
+ *
+ */
 public class ScrollBar extends GameActor {
 	
 	private DeckRenderer deckRenderer;
@@ -69,6 +74,9 @@ public class ScrollBar extends GameActor {
 		moveScale = deckGap * scaleRatio;
 	}
 	
+	/**
+	 * Update the position after a screen refresh
+	 */
 	public void setScrollBar(float deltaY) {
 		float scrollGap = deckRenderer.getCamera().viewportHeight - 2 * Constants.scrollBarYGap - this.getHeight();
 		float deckGap = range - deckRenderer.getCamera().viewportHeight;

@@ -6,6 +6,12 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+/**
+ * 
+ * A card meant only to display upgrades and therefore does not
+ * respond to mouse clicks
+ *
+ */
 public class UpgradeCard extends Card {
 
 	public UpgradeCard(GameRenderer gr) {

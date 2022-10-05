@@ -29,9 +29,15 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import enums.GameStatus;
 import enums.Symbol;
 
+/**
+ * 
+ * Manages, draws, and displays the game logic
+ *
+ */
 public class GameRenderer extends Stage {
 	
 	private Button confirmButton;
+	private boolean quick;
 	private int turnCounter;
 	private LinkedList<Symbol> symbolQueue;
 	private Symbol promptSymbol;
@@ -156,6 +162,11 @@ public class GameRenderer extends Stage {
 	
 	
 	//Assume every array list is sorted
+	/**
+	 * 
+	 * Checks if card is playable in a storage container, assuming
+	 * everything is sorted (which it should be by default)
+	 */
 	public boolean isPlayable(Card card, StorageContainer destination) {
 		ArrayList<Symbol> requirements,storage;
 		
@@ -169,6 +180,11 @@ public class GameRenderer extends Stage {
 		
 	}
 	
+	/**
+	 * 
+	 * Checks if requirements are in storage taking into account duplicates
+	 * 
+	 */
 	public boolean containsAll(ArrayList<Symbol> requirements, ArrayList<Symbol> storage ) {
 		Iterator<Symbol> reqIter = requirements.iterator();
 		Iterator<Symbol> storIter = storage.iterator();
@@ -202,9 +218,14 @@ public class GameRenderer extends Stage {
 		return true;
 	}
 	
+	/**
+	 * Play a card at the storage container, assumes card is already playable, so
+	 * call isPlayable beforehand
+	 */
 	public boolean play(Card card, StorageContainer destination) {
 		clickedActor = null;
 		currentContainer = destination;
+		quick = false;
 		
 		//Play the actual card
 		ArrayList<Symbol> requirements,storage;
@@ -283,8 +304,14 @@ public class GameRenderer extends Stage {
 		}
 	}
 	
+	/**
+	 * Activate the effect of a symbol whose value is -1
+	 */
 	private void applySymbol(Symbol symbol) {
 		switch(symbol) {
+		case DRAW1:
+			hand.drawCard();
+			break;
 		case REFRESH4:
 			hand.drawStartingHand(4);
 			break;
@@ -294,18 +321,27 @@ public class GameRenderer extends Stage {
 		case RETURN:
 			//Do nothing
 			break;
+		case QUICK:
+			quick = true;
+			break;
 		default:
 			break;
 		}
 	}
 	
+	/**
+	 * Process the next symbol in line
+	 */
 	private void processSymbolQueue() {
 		if(symbolQueue.isEmpty()) {
 			GameStatus.gamestatus = GameStatus.PLAYING;
-			turnCounter++;
-			for(StorageContainer sc:storageContainers) {
-				sc.endTurn();
+			if(!quick) {
+				for(StorageContainer sc:storageContainers) {
+					sc.endTurn();
+				}
+				turnCounter++;
 			}
+
 			return;
 		}
 		Symbol nextSymbol = symbolQueue.pop();
@@ -363,12 +399,19 @@ public class GameRenderer extends Stage {
 		}
 	}
 	
+	/**
+	 * Start asking the user for an input
+	 */
 	private void startPrompt(Symbol symbol) {
 		GameStatus.gamestatus = GameStatus.PROMPTING;
 		promptSymbol = symbol;
 		transparentLayer.setVisible(true);
+		transparentLayer.toFront();
 	}
 	
+	/**
+	 * Process the received input
+	 */
 	public void finishPrompt(GameActor ga) {
 		transparentLayer.setVisible(false);
 		confirmButton.setVisible(false);
@@ -411,6 +454,9 @@ public class GameRenderer extends Stage {
 		processSymbolQueue();
 	}
 
+	/**
+	 * Start and open the upgrade window
+	 */
 	private void startUpgrade(int level, boolean isUpgrade) {
 		GameStatus.gamestatus = GameStatus.UPGRADING;
 		transparentLayer.setVisible(true);
@@ -419,17 +465,27 @@ public class GameRenderer extends Stage {
 		upgradeWindow.setOptions(level, isUpgrade);
 		viewButton.setVisible(true);
 		viewButton.toFront();
+		for(StorageContainer sc: storageContainers) {
+			sc.setQuestTouchable(Touchable.disabled);
+		}
 	}
 	
+	/**
+	 * Return everything to the state before after upgrading
+	 */
 	public void finishUpgrade() {
 		transparentLayer.setVisible(false);
 		upgradeWindow.setVisible(false);
 		viewButton.setVisible(false);
 		processSymbolQueue();
-		//GameStatus.gamestatus = GameStatus.PLAYING;
+		for(StorageContainer sc: storageContainers) {
+			sc.setQuestTouchable(Touchable.enabled);
+		}
 	}
 	
-
+	/**
+	 * Unused old code don't call
+	 */
 	public void startQuest() {
 		GameStatus.gamestatus = GameStatus.QUESTING;
 		transparentLayer.setVisible(true);
@@ -443,6 +499,9 @@ public class GameRenderer extends Stage {
 		viewButton.toFront();
 	}
 	
+	/**
+	 * Unused old code don't call
+	 */
 	public boolean recieveQuest(Symbol s, boolean selected) {
 		if(selected) {
 			questViewer.removeSymbol(s);
@@ -456,6 +515,10 @@ public class GameRenderer extends Stage {
 		return false;
 	}
 	
+	
+	/**
+	 * Old Unused Version don't call
+	 */
 	public void finishQuest() {
 		if(!questViewer.isComplete()) {
 			return;
@@ -478,8 +541,12 @@ public class GameRenderer extends Stage {
 		}
 	}
 	
+	/**
+	 * Process and submit a quest at given storage container
+	 */
 	public void completeQuest(StorageContainer sc) {
 		GameStatus.gamestatus = GameStatus.PLAYING;
+		QuestViewer.questProgress++;
 		transparentLayer.setVisible(false);
 		
 		ArrayList<Symbol> pool = sc.getStorage();
@@ -496,8 +563,13 @@ public class GameRenderer extends Stage {
 		for(StorageContainer stor: storageContainers) {
 			stor.checkQuest();
 		}
+		
+		this.startUpgrade(-1, false);
 	}
 	
+	/**
+	 * Removes the transparent layer but not the ability to interact with cards
+	 */
 	public void toggleView() {
 		boolean newVisible = !transparentLayer.isVisible();
 		transparentLayer.setVisible(newVisible);

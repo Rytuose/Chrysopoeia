@@ -6,6 +6,11 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+/**
+ * 
+ * A class used in Deck Renderer in order to hold and display cards in Game Renderer
+ *
+ */
 public class CardHolder extends GameActor {
 	
 	private DeckRenderer deckRenderer;

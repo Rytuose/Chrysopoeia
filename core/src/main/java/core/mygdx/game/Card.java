@@ -16,6 +16,11 @@ import enums.GameStatus;
 import enums.Location;
 import enums.Symbol;
 
+/**
+ * 
+ * Represents a card in the game
+ *
+ */
 public class Card extends GameActor {
 	
 	private ArrayList<Symbol> input,leftOutput,centerOutput,rightOutput;
@@ -41,6 +46,9 @@ public class Card extends GameActor {
 		this.setBounds(this.getX(), this.getY(), Constants.cardWidth, Constants.cardHeight);
 	}
 	
+	/**
+	 * Adds all inputs and outputs of card c into this card
+	 */
 	public void add(Card c) {
 		merge(this.getInput(),c.getInput());
 		merge(this.getLeftOutput(),c.getLeftOutput());
@@ -69,6 +77,9 @@ public class Card extends GameActor {
 		destination.sort(null);
 	}
 	
+	/**
+	 * Resets input, output, and level of the card
+	 */
 	public void resetCard() {
 		input.clear();
 		leftOutput.clear();
@@ -133,7 +144,9 @@ public class Card extends GameActor {
 		//System.out.println("Time to draw a card " + (System.nanoTime() - time));
 	}
 
-	
+	/**
+	 * Called when mouse enters card
+	 */
 	public void enter() {
 		super.getSprite().setBounds(
 			this.getX() + (Constants.cardWidth * (1- Constants.cardOverlapRatio))/2 - Constants.cardHoverWidth/2, 
@@ -142,6 +155,9 @@ public class Card extends GameActor {
 		gameRenderer.setHoverActor(this);
 	}
 	
+	/**
+	 * Called when mouse exits card
+	 */
 	public void exit() {
 		if(gameRenderer.getClickedActor() == null || !gameRenderer.getClickedActor().equals(this)) {
 			super.getSprite().setBounds(this.getX(), this.getY(), Constants.cardWidth, Constants.cardHeight);
@@ -150,6 +166,9 @@ public class Card extends GameActor {
 		}	
 	}
 	
+	/**
+	 * Called when mouse is pressed down on card
+	 */
 	public void click() {
 		gameRenderer.setHand();
 		super.setBounds(this.getX() + (Constants.cardWidth * (1- Constants.cardOverlapRatio))/2 - Constants.cardHoverWidth/2, 
@@ -159,9 +178,10 @@ public class Card extends GameActor {
 		this.toFront();
 	}
 	
+	/**
+	 * Called when mouse is released after clicked on card
+	 */
 	public void release() {
-		//Insert Game Logic on release here
-		
 		if(GameStatus.gamestatus == GameStatus.PLAYING 
 				&& gameRenderer.getHoverActor() instanceof StorageContainer 
 				&& gameRenderer.isPlayable(this,(StorageContainer) gameRenderer.getHoverActor()) ) {
@@ -186,6 +206,9 @@ public class Card extends GameActor {
 		cardListener.resetIsFirst();
 	}
 	
+	/**
+	 * Adds a symbol at the given location
+	 */
 	public void addSymbol(Symbol symbol, Location location) {
 		ArrayList<Symbol> al = null;
 		
@@ -208,6 +231,9 @@ public class Card extends GameActor {
 		al.sort(null);
 	}
 	
+	/**
+	 * Gets contents of a given location
+	 */
 	public ArrayList<Symbol> getLocation(Location location){
 		switch(location) {
 		case INPUT:
@@ -222,6 +248,9 @@ public class Card extends GameActor {
 		return null;
 	}
 	
+	/**
+	 * Returns all output of a card
+	 */
 	public ArrayList<Symbol> getAllOutput(){
 		ArrayList<Symbol> totalSymbols = new ArrayList<Symbol>();
 		totalSymbols.addAll(leftOutput);
@@ -239,12 +268,30 @@ public class Card extends GameActor {
 				"Right " + rightOutput.toString();
 	}
 	
-	public Vector3 unproject(Vector3 vect3) {return gameRenderer.getCamera().unproject(vect3);}
+	@Override
+	public boolean equals(Object card) {
+		if(!(card instanceof Card)) {
+			return false;
+		}
+		Card c = (Card)card;
+		
+		return(input.equals(c.getInput()) &&
+				leftOutput.equals(c.getLeftOutput()) &&
+				centerOutput.equals(c.getCenterOutput()) &&
+				rightOutput.equals(c.getRightOutput()) &&
+				level == c.getLevel());
+	}
 	
+	/**
+	 * Increases level by 1
+	 */
 	public void upgrade() {level++;}
 	
 	public int getLevel() {return level;}
 	
+	/**
+	 * Process this card as a prompt
+	 */
 	public void recievePrompt() {gameRenderer.finishPrompt(this);}
 	
 	public ArrayList<Symbol> getInput(){return input;}

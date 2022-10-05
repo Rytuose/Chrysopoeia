@@ -1,5 +1,13 @@
 package enums;
 
+/**
+ * 
+ * Describes a symbol that can be in a card
+ * If symbol is >=0, it can be in a container
+ * If symbol is -1, then no input is required to perform the action
+ * If symbol is -2, then an input is required to perform the action
+ *
+ */
 /*Value Meaning
  * >=0, can be in a container
  * <0, symbol on card*/
@@ -8,9 +16,11 @@ public enum Symbol {
 	NONE(-1),
 	
 	//Applied Automatically
+	QUICK(-1),
 	RETURN(-1),
 	REFRESH4(-1),
 	REFRESH5(-1),
+	DRAW1(-1),
 	
 	//Symbols Added
 	GHOST(0),

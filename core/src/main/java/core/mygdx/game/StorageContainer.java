@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Pool;
@@ -17,6 +18,11 @@ import com.badlogic.gdx.utils.Pool;
 import enums.GameStatus;
 import enums.Symbol;
 
+/**
+ * 
+ * Holds symbols with value 0 or greater
+ *
+ */
 public class StorageContainer extends GameActor {
 
 	public static BitmapFont containerFont = new BitmapFont(Gdx.files.classpath("Consolas.fnt"));
@@ -157,6 +163,9 @@ public class StorageContainer extends GameActor {
 		}
 	}
 	
+	/**
+	 * Sets the position of the symbols in this container
+	 */
 	public void updateSymbols() {
 		
 		for(SymbolHolder sh: symbolHolders) {
@@ -179,6 +188,10 @@ public class StorageContainer extends GameActor {
 		}
 	}
 
+	
+	/**
+	 * Finds the corresponding symbol to the position selected from a prompt
+	 */
 	public void select(int position) {
 		System.out.println("Clicked symbol " + position + " " + GameStatus.gamestatus);
 		Symbol symbol = storage.get(position);
@@ -194,6 +207,9 @@ public class StorageContainer extends GameActor {
 		}
 	}
 	
+	/**
+	 * Adds a symbol to this container
+	 */
 	public void addStorage(Symbol s) {
 		if(storage.size() < Constants.maxSymbolStorage) {
 			storage.add(s);
@@ -201,9 +217,10 @@ public class StorageContainer extends GameActor {
 		}
 	}
 
-	
+	/**
+	 * Removes all selected symbols
+	 */
 	public void processSelected() {
-		
 		int position = 0;;
 		for(int i = 0; i < selected.length; i++) {
 			if(selected[i]) {
@@ -228,13 +245,17 @@ public class StorageContainer extends GameActor {
 	
 	public void endTurn() {
 		attackCountdown --;
-		if(attackCountdown == 0) {
+		if(attackCountdown <= 0) {
 			//System.out.println("Attack " + storage.toString());
 			int ghosts = 0;
+			int material = 0;
 			int attack = attackAmount;
 			for(Symbol s: storage) {
 				if(s == Symbol.GHOST) {
 					ghosts++;
+				}
+				else {
+					material++;
 				}
 			}
 			attack -= ghosts;
@@ -248,7 +269,22 @@ public class StorageContainer extends GameActor {
 				attack --;
 			}
 			
-			attackCountdown = (int)(Math.random() * 3) + 3;
+			attackAmount = 0;
+			attackCountdown = 0;
+			
+			//attackCountdown = (int)(Math.random() * 3) + 3;
+			
+			if(Math.random() < .07 * material) {
+				int min = (int)(material/2.3);
+				int max = (int)(material/1.8);
+				
+				attackAmount = (int)(Math.random() * (max - min)) + min;
+				
+				min = (int)((attackAmount*1.2) + .5) + 1;
+				max = (int)((attackAmount*1.5) + .5) + 1;
+				
+				attackCountdown = (int)(Math.random() * (max - min)) + min;
+			}
 			
 		}
 		
@@ -267,6 +303,8 @@ public class StorageContainer extends GameActor {
 		}
 		questButton.setVisible(canFinishQuest);
 	}
+	
+	public void setQuestTouchable(Touchable touchable) {questButton.setTouchable(touchable);}
 	
 	private void enter() {gameRenderer.setHoverActor(this);}
 	

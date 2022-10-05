@@ -9,6 +9,11 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import enums.Location;
 import enums.Symbol;
 
+/**
+ * 
+ * Holds all cards in use and records their locations
+ *
+ */
 public class Deck {
 	
 	private MyGdxGame game;
@@ -36,7 +41,9 @@ public class Deck {
 //		refreshCard.addSymbol(Symbol.UPGRADE1, Location.CENTER);
 //		refreshCard.addSymbol(Symbol.UPGRADE2, Location.CENTER);
 //		refreshCard.addSymbol(Symbol.UPGRADE3, Location.CENTER);
-		refreshCard.addSymbol(Symbol.NEW_CARD2, Location.CENTER);
+//		refreshCard.addSymbol(Symbol.NEW_CARD1, Location.CENTER);
+//		refreshCard.addSymbol(Symbol.NEW_CARD2, Location.CENTER);
+//		refreshCard.addSymbol(Symbol.NEW_CARD3, Location.CENTER);
 		
 		deckList.add(refreshCard);
 		deck.add(0, refreshCard);
@@ -83,6 +90,9 @@ public class Deck {
 				Constants.deckButtonWidth, Constants.deckButtonHeight);
 	}
 
+	/**
+	 * Adds a card to the deck
+	 */
 	public void add(Card c) {
 		deckList.add(c);
 		deck.add(c);
@@ -91,6 +101,9 @@ public class Deck {
 	
 	public void dispose() { for(Card c: deckList) c.dispose();}
 	
+	/**
+	 * Draws a card from the deck, the card is not placed anywhere
+	 */
 	public Card draw() {
 		if(deck.isEmpty()) {
 			LinkedList<Card> temp = discard;
@@ -109,6 +122,21 @@ public class Deck {
 		return c;
 	}
 	
+	/**
+	 * Sets up all cards able to be upgraded at a certain level
+	 */
+	public void resetUpgradeOptions(int level) {
+		upgradeList.clear();
+		for(Card c: deckList) {
+			if(c.getLevel() < level) {
+				upgradeList.add(c);
+			}
+		}		
+	}
+	
+	/**
+	 * Returns a random upgradeable card
+	 */
 	public Card randomUgradeCard() {
 		
 		if(upgradeList.isEmpty()) {
@@ -123,16 +151,9 @@ public class Deck {
 		return c;
 	}
 	
-
-	public void resetUpgradeOptions(int level) {
-		upgradeList.clear();
-		for(Card c: deckList) {
-			if(c.getLevel() < level) {
-				upgradeList.add(c);
-			}
-		}		
-	}
-	
+	/**
+	 * Returns all cards to the draw pile and shuffles the deck
+	 */
 	public void resetDeck() {
 		while(!discard.isEmpty()) {
 			deck.add(discard.pop());
@@ -150,6 +171,9 @@ public class Deck {
 		deck = temp;
 	}
 	
+	/**
+	 * Sends a card to the discard pile
+	 */
 	public void toDiscard(Card c) {
 		discard.add(c);
 		c.remove();
@@ -165,6 +189,9 @@ public class Deck {
 	
 	public LinkedList<Card> getDeckList(){return deckList;}
 	
+	/**
+	 * A testing function used to test upgrade algorithms and probabilites
+	 */
 	private void testUpgrade() {
 		UpgradeCard uc1,uc2,temp;
 		Card c;//,newCard;
@@ -173,8 +200,8 @@ public class Deck {
 		uc2 = new UpgradeCard(gameRenderer);
 		
 		c = new Card(gameRenderer);
-		c.addSymbol(Symbol.LEAD, Location.CENTER);
-		c.addSymbol(Symbol.LEAD, Location.CENTER);
+		c.addSymbol(Symbol.GHOST, Location.INPUT);
+		c.addSymbol(Symbol.COPPER, Location.CENTER);
 		//this.add(c);
 		
 //		int step = 1;
@@ -266,18 +293,6 @@ public class Deck {
 		
 		Card c;
 		
-//		//Lead Production Card
-//		c = new Card(gameRenderer);
-//		c.addSymbol(Symbol.LEAD, Location.CENTER);
-//		c.addSymbol(Symbol.LEAD, Location.CENTER);
-//		this.add(c);
-//		
-//		//Lead Production Card
-//		c = new Card(gameRenderer);
-//		c.addSymbol(Symbol.LEAD, Location.CENTER);
-//		c.addSymbol(Symbol.LEAD, Location.CENTER);
-//		this.add(c);
-//		
 		//Lead Production Card
 		c = new Card(gameRenderer);
 		c.addSymbol(Symbol.LEAD, Location.CENTER);
@@ -288,29 +303,7 @@ public class Deck {
 		c = new Card(gameRenderer);
 		c.addSymbol(Symbol.COPPER, Location.CENTER);
 		this.add(c);
-//		
-//		//Copper Trade Card
-//		c = new Card(gameRenderer);
-//		//c.addSymbol(Symbol.COPPER, Location.INPUT);
-//		c.addSymbol(Symbol.COPPER, Location.LEFT);
-//		c.addSymbol(Symbol.COPPER, Location.RIGHT);
-//		this.add(c);
-//		
-//		//Silver Trade Card
-//		c = new Card(gameRenderer);
-//		c.addSymbol(Symbol.LEAD, Location.INPUT);
-//		c.addSymbol(Symbol.LEAD_OR_COPPER, Location.INPUT);
-//		c.addSymbol(Symbol.COPPER, Location.INPUT);
-//		c.addSymbol(Symbol.SILVER, Location.CENTER);
-//		this.add(c);
-//		
-//		//Gold Trade Card (Probably remove this later)
-//		c = new Card(gameRenderer);
-//		c.addSymbol(Symbol.SILVER, Location.INPUT);
-//		c.addSymbol(Symbol.COPPER, Location.INPUT);
-//		c.addSymbol(Symbol.GOLD, Location.CENTER);
-//		this.add(c);
-//		
+
 		//Upgrade Card
 		c = new Card(gameRenderer);
 		c.addSymbol(Symbol.LEAD, Location.INPUT);
@@ -318,65 +311,25 @@ public class Deck {
 		c.addSymbol(Symbol.UPGRADE1, Location.CENTER);
 		c.addSymbol(Symbol.NEW_CARD1, Location.CENTER);
 		this.add(c);
-//	
-//		//Upgrade Card
-//		c = new Card(gameRenderer);
-//		c.addSymbol(Symbol.LEAD, Location.INPUT);
-//		c.addSymbol(Symbol.COPPER, Location.INPUT);
-//		c.addSymbol(Symbol.UPGRADE1, Location.CENTER);
-//		this.add(c);
-//	
-//		
-//		//Upgrade Card
-//		c = new Card(gameRenderer);
-//		c.addSymbol(Symbol.COPPER, Location.INPUT);
-//		c.addSymbol(Symbol.COPPER, Location.INPUT);
-//		c.addSymbol(Symbol.LEAD, Location.INPUT);
-//		c.addSymbol(Symbol.UPGRADE1, Location.CENTER);
-//		this.add(c);
 		
 //		//Move Card
 //		c = new Card(gameRenderer);
 //		c.addSymbol(Symbol.MOVE_LEFT, Location.CENTER);
 //		c.addSymbol(Symbol.MOVE_RIGHT, Location.CENTER);
 //		this.add(c);
-//		
+
 //		c = new Card(gameRenderer);
-//		c.addSymbol(Symbol.GHOST, Location.CENTER);
-//		this.add(c);
-		
-//		c = new Card(gameRenderer);
-//		c.addSymbol(Symbol.GHOST, Location.CENTER);
-//		this.add(c);
-//		
-		c = new Card(gameRenderer);
-		c.addSymbol(Symbol.GHOST, Location.CENTER);
-		this.add(c);
-		
-		c = new Card(gameRenderer);
-		c.addSymbol(Symbol.GHOST, Location.INPUT);
-		c.addSymbol(Symbol.COPPER, Location.CENTER);
-		c.addSymbol(Symbol.GHOST, Location.RIGHT);
-		this.add(c);
-//		
-//		c = new Card(gameRenderer);
-//		c.addSymbol(Symbol.SILVER, Location.INPUT);
-//		c.addSymbol(Symbol.COPPER, Location.CENTER);
-//		c.addSymbol(Symbol.COPPER, Location.CENTER);
-//		c.addSymbol(Symbol.COPPER, Location.CENTER);
+//		c.addSymbol(Symbol.DRAW1, Location.CENTER);
 //		this.add(c);
 //		
 //		c = new Card(gameRenderer);
-//		c.addSymbol(Symbol.LEAD, Location.INPUT);
-//		c.addSymbol(Symbol.COPPER, Location.INPUT);
-//		c.addSymbol(Symbol.COPPER, Location.INPUT);
-//		c.addSymbol(Symbol.SILVER, Location.CENTER);
+//		c.addSymbol(Symbol.GHOST, Location.INPUT);
+//		c.addSymbol(Symbol.LEAD, Location.CENTER);
+//		c.addSymbol(Symbol.GHOST, Location.RIGHT);
 //		this.add(c);
 //		
 //		c = new Card(gameRenderer);
-//		c.addSymbol(Symbol.LEAD, Location.INPUT);
-//		c.addSymbol(Symbol.LEAD, Location.INPUT);
-//		c.addSymbol(Symbol.COPPER, Location.CENTER);
+//		c.addSymbol(Symbol.GHOST, Location.INPUT);
 //		c.addSymbol(Symbol.COPPER, Location.CENTER);
 //		this.add(c);
 	}

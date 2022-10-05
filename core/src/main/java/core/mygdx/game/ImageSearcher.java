@@ -8,6 +8,11 @@ import com.badlogic.gdx.graphics.Texture;
 
 import enums.Symbol;
 
+/**
+ * 
+ * Class of static functions that get textures for actors
+ *
+ */
 public class ImageSearcher {
 	
 	private static HashMap<Symbol,Texture> cardSymbolMap = new HashMap<Symbol,Texture>();

@@ -9,7 +9,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import enums.Symbol;
 
+/**
+ * 
+ * Displays and manages quests
+ *
+ */
 public class QuestViewer extends GameActor {
+	
+	public static int questProgress = 0;
 	
 	private GameRenderer gameRenderer;
 	private ArrayList<Symbol> quest;
@@ -64,6 +71,9 @@ public class QuestViewer extends GameActor {
 //	}
 	
 	
+	/**
+	 * Creates a new quest
+	 */
 	public void setQuest() {
 		questStage++;
 		quest.clear();
@@ -96,6 +106,9 @@ public class QuestViewer extends GameActor {
 		
 	}
 	
+	/**
+	 * Old don't use
+	 */
 	public boolean isSymbolNeeded(Symbol s) {
 		for(int i = 0; i < quest.size(); i++) {
 			if(quest.get(i)==s && completed.get(i)==false) {
@@ -108,6 +121,9 @@ public class QuestViewer extends GameActor {
 		return false;
 	}
 	
+	/**
+	 * Old don't use
+	 */
 	public void recieveSymbol(Symbol s) {
 		for(int i = 0; i < quest.size(); i++) {
 			if(quest.get(i)==s && completed.get(i)==false) {
@@ -117,6 +133,9 @@ public class QuestViewer extends GameActor {
 		}
 	}
 	
+	/**
+	 * Old don't use
+	 */
 	public void removeSymbol(Symbol s) {
 		for(int i = quest.size()-1; i >= 0; i--) {
 			if(quest.get(i)==s && completed.get(i) == true) {
@@ -126,6 +145,9 @@ public class QuestViewer extends GameActor {
 		}
 	}
 	
+	/**
+	 * Old don't use
+	 */
 	public boolean isComplete() {
 		for(int i = 0 ; i< quest.size(); i++) {
 			if(!completed.get(i)) {
