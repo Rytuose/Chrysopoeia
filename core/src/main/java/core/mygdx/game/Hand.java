@@ -33,6 +33,11 @@ public class Hand {
 	
 	public void discardCard(Card c) {
 		int pos = hand.indexOf(c);
+		
+		if(pos == -1) {
+			return;
+		}
+		
 		deck.toDiscard(hand.get(pos));
 		hand.remove(pos);
 	}
@@ -74,7 +79,9 @@ public class Hand {
 		}
 		else {
 			Card c = deck.draw();
-			deck.toDiscard(c);
+			if(c != null) {
+				deck.toDiscard(c);
+			}
 		}
 		
 		this.setHand();
@@ -96,6 +103,8 @@ public class Hand {
 	 * Puts the cards in the hand in the right position
 	 */
 	public void setHand() {
+		System.out.println("-------------------------");
+		System.out.println("Set Hand " + hand.toString());
 		int middle = Constants.game_width/2;
 		int totalLength = (int) (hand.size() * Constants.cardWidth * 
 				(1-Constants.cardOverlapRatio) 
@@ -120,6 +129,7 @@ public class Hand {
 			
 			if(!c.equals(gameRenderer.getClickedActor())){
 				
+				
 				if(c.getSprite().getWidth() != Constants.cardWidth) {
 					c.getSprite().setBounds(c.getX(), c.getY(), Constants.cardWidth, Constants.cardHeight);
 				}
@@ -137,6 +147,9 @@ public class Hand {
 				}
 				c.setVisible(true);
 				
+				
+				
+				
 				if(GameStatus.gamestatus != GameStatus.PROMPTING || i == 0) {
 					c.setZIndex(1);
 				}
@@ -146,7 +159,6 @@ public class Hand {
 				//c.toFront();
 				//c.setZIndex(1);
 			}
-
 		}
 	}
 	
@@ -176,5 +188,7 @@ public class Hand {
 	}
 	
 	public int size() {return hand.size();}
+	
+	public ArrayList<Card> getHand() { return hand;}
 
 }

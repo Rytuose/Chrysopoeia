@@ -72,6 +72,7 @@ public class Constants {
 	
 	public static final int upgradeButtonWidth = 120;
 	public static final int upgradeButtonHeight = 30;
+
 	
 	public static final int viewButtonWidth = 80;
 	public static final int viewButtonHeight = 60;
@@ -81,6 +82,9 @@ public class Constants {
 	public static final int questSymbolWidth = 40;
 	public static final int questSymbolHeight = 40;
 	public static final int questSymbolGap = 10;
+	
+	public static final int biasButtonWidth = Constants.questWidth/4;
+	public static final int questSwapWidth = 25;
 	
 	public static final int deckButtonXGap = 30;
 	public static final int deckButtonYGap = 25;

@@ -22,7 +22,7 @@ public class UpgradeButton extends Button {
 		
 		upgradeOption = uo;
 
-		this.setBounds(getX(), getY(), Constants.upgradeButtonWidth, Constants.upgradeButtonHeight);
+		this.setBounds(getX(), getY(), Constants.biasButtonWidth, Constants.upgradeButtonHeight);
 	}
 
 	@Override

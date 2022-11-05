@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import enums.Bias;
 import enums.CardType;
 import enums.Location;
 import enums.Symbol;
@@ -89,7 +90,7 @@ public class UpgradeManager {
 	}
 	
 	private static void upgradeGhost(Card card, int level) {
-		int upgradePoints = 2 + level/2;
+		int upgradePoints = 2 + (level+1)/2;
 		
 		if(!card.getInput().contains(Symbol.GHOST)) {
 			//Ghost Production
@@ -108,28 +109,6 @@ public class UpgradeManager {
 		//After this card has ghost input
 		else if(card.getLeftOutput().contains(Symbol.GHOST) ||
 				card.getRightOutput().contains(Symbol.GHOST)) {
-			
-//			//Probably stuff this into a function later
-//			ArrayList<Symbol> center = card.getCenterOutput();
-//			if(center.isEmpty()) {
-//				center.add(Symbol.LEAD);
-//				center.sort(null);
-//				return;
-//			}
-//			else if(center.get(0) == Symbol.GOLD) {
-//				center.add(Symbol.COPPER);
-//				center.sort(null);
-//				return;
-//			}
-//			for(int i = 0; i < symbolOrder.length; i++) {
-//				if(center.get(0) == symbolOrder[i]) {
-//					center.remove(0);
-//					center.add(symbolOrder[i+1]);
-//					center.sort(null);
-//					return;
-//				}
-//			}
-
 			for(int i = 0; i < upgradePoints; i++) {
 				UpgradeManager.mergeOutput(card, 0, Location.CENTER);
 			}
@@ -161,7 +140,7 @@ public class UpgradeManager {
 	private static void upgradeProduction(Card card, int level) {
 		LinkedList<Location> activeLocations = getActiveLocations(card);
 		
-		int upgradePoints = level/2 + 1;//level + 1;
+		int upgradePoints = (level+1)/2 + 1;//level + 1;
 		while(upgradePoints > 0) {
 			upgradePoints = UpgradeManager.upgradeLocation(card, upgradePoints, activeLocations);
 		}
@@ -189,7 +168,7 @@ public class UpgradeManager {
 	}
 	
 	private static void upgradeTrade(Card card, int level) {
-		int upgradePoints = level + 1;
+		int upgradePoints = level + 2;
 		LinkedList<Location> activeLocations = getActiveLocations(card);
 		
 		int outputSize = 0;
@@ -241,7 +220,7 @@ public class UpgradeManager {
 	}
 	
 	private static void upgradeUpgrade(Card card, int level) {
-		int upgradePoints = level + 1;
+		int upgradePoints = level + 2;
 		LinkedList<Location> activeLocations = getActiveLocations(card);
 		
 		int totalValue = 0;
@@ -561,7 +540,7 @@ public class UpgradeManager {
 	 */
 	public static void newCard(Card upgradeCard, int rank) {
 		upgradeCard.resetCard();
-		int netValue = rank + 2;
+		int netValue = rank + 3;
 		int symbolPos = (int)(Math.random() * (symbolOrder.length + 1));
 		
 		System.out.println("Upgrade Numbers " + netValue + " " + symbolPos + " " + rank);
@@ -571,25 +550,34 @@ public class UpgradeManager {
 			return;
 		}
 		
-		int randNum = (int)(Math.random()*100);
+		int randNum = (Bias.bias == Bias.NONE)? (int)(Math.random()*80):(int)(Math.random()*100);
 		
-		if(randNum < 30) {
+		if(randNum < 20) {
 			//Production
 			UpgradeManager.createProduction(upgradeCard,rank);
 		}
-		else if(randNum < 70) {
+		else if(randNum < 50) {
 			//Trade
 			UpgradeManager.createTrade(upgradeCard, rank);
 		}
-		else if(randNum < 100) {
+		else if(randNum < 80) {
 			//Ghost
 			UpgradeManager.createGhost(upgradeCard,rank);
 		}
-		else if(randNum < 75) {
-			//Upgrade (Should have a separate method to create these)
-		}
 		else {
-			//Utility
+			switch(Bias.bias){
+			case GHOST:
+				UpgradeManager.createGhost(upgradeCard,rank);
+				break;
+			case PRODUCTION:
+				UpgradeManager.createProduction(upgradeCard, rank);
+				break;
+			case TRADE:
+				UpgradeManager.createTrade(upgradeCard, rank);
+				break;
+			case NONE: //Shouldn't happen but just in case
+				UpgradeManager.createProduction(upgradeCard, rank);
+			}
 		}
 	}
 
@@ -619,6 +607,11 @@ public class UpgradeManager {
 			upgradeCard.addSymbol(Symbol.QUICK, Location.CENTER);
 			break;
 		case 3:
+			upgradeCard.addSymbol(Symbol.LEAD, Location.INPUT);
+			upgradeCard.addSymbol(Symbol.COPPER, Location.INPUT);
+			upgradeCard.addSymbol(Symbol.DELETE, Location.CENTER);
+			break;
+		case 4:
 			Symbol mainSymbol;
 			int rank;
 			

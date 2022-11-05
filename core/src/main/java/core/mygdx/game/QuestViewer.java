@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+import enums.Bias;
 import enums.Symbol;
 
 /**
@@ -16,13 +18,17 @@ import enums.Symbol;
  */
 public class QuestViewer extends GameActor {
 	
+	private static Bias[] biasOrder = {Bias.NONE, Bias.PRODUCTION, Bias.TRADE, Bias.GHOST};
 	public static int questProgress = 0;
 	
+	private boolean isQuest;
 	private GameRenderer gameRenderer;
 	private ArrayList<Symbol> quest;
 	private ArrayList<Boolean> completed;
 	private int startX,startY,questStage;
 	private StorageContainer[] storageContainers;
+	private Button rightSwapButton, leftSwapButton;	
+	private BiasSwitch[] biasSwitches;
 	
 	public QuestViewer(GameRenderer gr, StorageContainer[] sc) {
 		super();
@@ -34,6 +40,61 @@ public class QuestViewer extends GameActor {
 		startX = 0;
 		questStage = 0;
 		storageContainers = sc;
+		isQuest = true;
+
+		rightSwapButton = new Button(new Texture(Gdx.files.classpath("CommonCard.png")),
+				new Texture(Gdx.files.classpath("RareCard.png"))) {
+			@Override
+			public void click() {
+				swapQuest();
+			}
+		};
+		
+		gameRenderer.addActor(rightSwapButton);
+		
+		
+		leftSwapButton = new Button(new Texture(Gdx.files.classpath("CommonCard.png")),
+				new Texture(Gdx.files.classpath("RareCard.png"))) {
+			@Override
+			public void click() {
+				swapQuest();
+			}
+		};
+		
+		gameRenderer.addActor(leftSwapButton);
+		
+		
+		biasSwitches = new BiasSwitch[biasOrder.length];
+		for(int i = 0 ; i < biasOrder.length; i++) {
+			biasSwitches[i] = new BiasSwitch(new Texture(Gdx.files.classpath("UncommonCard.png")),
+				new Texture(Gdx.files.classpath("BasicCard.png")), this,  biasOrder[i]);
+			gameRenderer.addActor(biasSwitches[i]);
+			biasSwitches[i].setVisible(false);
+		}
+		biasSwitches[0].click();
+		setBiasPositions();
+		
+		//swapQuest();
+
+	}
+
+	@Override
+	public void positionChanged() {
+		super.positionChanged();
+		rightSwapButton.setBounds(this.getX() + this.getWidth(),this.getY(),
+				Constants.questSwapWidth, Constants.questHeight);
+		leftSwapButton.setBounds(this.getX() - Constants.questSwapWidth, this.getY(),
+				Constants.questSwapWidth, Constants.questHeight);
+		setBiasPositions();
+	}
+	
+	private void setBiasPositions() {
+		float startX = this.getX() + (this.getWidth() - (Constants.biasButtonWidth * biasSwitches.length))/2;
+		
+		for(int i = 0; i < biasSwitches.length; i++) {
+			biasSwitches[i].setPosition(startX + (i*Constants.biasButtonWidth), this.getY());
+			biasSwitches[i].toFront();
+		}
 	}
 	
 	@Override
@@ -42,34 +103,28 @@ public class QuestViewer extends GameActor {
 
 		Texture texture;
 		
-		for(int i = 0 ; i < quest.size() ; i++) {
-			if(completed.get(i)) {
-				texture = ImageSearcher.getSelectedCardSymbol(quest.get(i));
+		if(isQuest) {
+			for(int i = 0 ; i < quest.size() ; i++) {
+				if(completed.get(i)) {
+					texture = ImageSearcher.getSelectedCardSymbol(quest.get(i));
+				}
+				else {
+					texture = ImageSearcher.getCardSymbol(quest.get(i));
+				}
+				batch.draw(texture,
+						startX + i * (Constants.questSymbolWidth + Constants.questSymbolGap),
+						startY, Constants.questSymbolWidth, Constants.questSymbolHeight);
 			}
-			else {
-				texture = ImageSearcher.getCardSymbol(quest.get(i));
-			}
-			batch.draw(texture,
-					startX + i * (Constants.questSymbolWidth + Constants.questSymbolGap),
-					startY, Constants.questSymbolWidth, Constants.questSymbolHeight);
 		}
 	}
-//	
-//	public void drawQuestSymbol(Batch batch) {
-//		if(questPos >= 0) {
-//			batch.draw(ImageSearcher.getCardSymbol(quest.get(questPos)),
-//					startX + questPos * (Constants.questSymbolWidth + Constants.questSymbolGap),
-//					startY, Constants.questSymbolWidth, Constants.questSymbolHeight);
-//		}
-//		
-////		
-////		for(int i = 0 ; i < quest.size() ; i+=2) {
-////			batch.draw(ImageSearcher.getCardSymbol(quest.get(i)),
-////					startX + i * (Constants.questSymbolWidth + Constants.questSymbolGap),
-////					startY, Constants.questSymbolWidth, Constants.questSymbolHeight);
-////		}
-//	}
 	
+	private void swapQuest() {
+		isQuest = !isQuest;
+		boolean isVisible = (isQuest)?false:true;
+		for(int i = 0 ; i < biasSwitches.length; i++) {
+			biasSwitches[i].setVisible(isVisible);
+		}
+	}
 	
 	/**
 	 * Creates a new quest
@@ -180,4 +235,21 @@ public class QuestViewer extends GameActor {
 	}
 	
 	public ArrayList<Symbol> getQuest() { return quest;}
+	
+	public void selectBias(BiasSwitch bs) {
+		boolean noSelect = true;
+		for(int i = 0 ; i < biasSwitches.length; i++) {
+			if(biasSwitches[i].getSelected()) {
+				noSelect = false;
+			}
+			if(biasSwitches[i] != bs && biasSwitches[i].getSelected()) {
+				biasSwitches[i].toggleSelect();
+				biasSwitches[i].reset();
+			}
+		}
+		
+		if(noSelect) {
+			biasSwitches[0].click();
+		}
+	}
 }

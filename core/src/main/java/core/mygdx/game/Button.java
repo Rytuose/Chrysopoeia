@@ -1,4 +1,4 @@
-package core.mygdx.game;
+ package core.mygdx.game;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -12,7 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
  */
 public abstract class Button extends GameActor {
 	
-	private Texture normalTexture,hoverTexture;
+	protected Texture normalTexture,hoverTexture;
 	private boolean touchDown;
 	
 	/**

@@ -268,8 +268,7 @@ public class Card extends GameActor {
 				"Right " + rightOutput.toString();
 	}
 	
-	@Override
-	public boolean equals(Object card) {
+	public boolean isEqual (Object card) {
 		if(!(card instanceof Card)) {
 			return false;
 		}
