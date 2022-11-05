@@ -32,7 +32,7 @@ public class Deck {
 		upgradeList = new LinkedList<Card>();
 		
 		makeStartingDeck();	
-		this.shuffle();
+		//this.shuffle();
 		
 		refreshCard = new Card(gameRenderer);
 		refreshCard.addSymbol(Symbol.REFRESH4, Location.CENTER);
@@ -97,6 +97,13 @@ public class Deck {
 		deckList.add(c);
 		deck.add(c);
 		c.remove();
+	}
+	
+	public void delete(Card c) {
+		deckList.remove(c);
+		deck.remove(c);
+		discard.remove(c);
+		c.dispose();
 	}
 	
 	public void dispose() { for(Card c: deckList) c.dispose();}
@@ -293,6 +300,22 @@ public class Deck {
 		
 		Card c;
 		
+//		c = new Card(gameRenderer);
+//		c.addSymbol(Symbol.DELETE,Location.CENTER);
+//		this.add(c);
+//		
+//		c = new Card(gameRenderer);
+//		c.addSymbol(Symbol.DRAW1, Location.CENTER);
+//		c.addSymbol(Symbol.DRAW1, Location.CENTER);
+//		c.addSymbol(Symbol.QUICK, Location.CENTER);
+//		this.add(c);
+//		
+//		c = new Card(gameRenderer);
+//		c.addSymbol(Symbol.DRAW1, Location.CENTER);
+//		c.addSymbol(Symbol.DRAW1, Location.CENTER);
+//		c.addSymbol(Symbol.QUICK, Location.CENTER);
+//		this.add(c);
+		
 		//Lead Production Card
 		c = new Card(gameRenderer);
 		c.addSymbol(Symbol.LEAD, Location.CENTER);
@@ -318,10 +341,10 @@ public class Deck {
 //		c.addSymbol(Symbol.MOVE_RIGHT, Location.CENTER);
 //		this.add(c);
 
-//		c = new Card(gameRenderer);
-//		c.addSymbol(Symbol.DRAW1, Location.CENTER);
-//		this.add(c);
-//		
+
+		
+
+		
 //		c = new Card(gameRenderer);
 //		c.addSymbol(Symbol.GHOST, Location.INPUT);
 //		c.addSymbol(Symbol.LEAD, Location.CENTER);

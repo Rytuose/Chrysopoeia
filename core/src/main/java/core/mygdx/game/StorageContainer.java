@@ -40,8 +40,8 @@ public class StorageContainer extends GameActor {
 		super();
 		
 		gameRenderer = gr;
-		attackCountdown = (int)(Math.random() * 5) + 1;
-		attackAmount = 2;
+		attackCountdown = 0;
+		attackAmount = 0;
 		canFinishQuest = false;
 
 		storage = new ArrayList<Symbol>();

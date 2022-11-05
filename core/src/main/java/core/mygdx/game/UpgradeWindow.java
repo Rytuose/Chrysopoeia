@@ -68,8 +68,8 @@ public class UpgradeWindow extends GameActor {
 		//Prevent Duplicates
 		for(int i = 0; i < upgradeOptions.length; i++) {
 			for(int j = 0; j < i; j++) {
-				if(upgradeOptions[i].getUpgradeCard().equals(upgradeOptions[j].getUpgradeCard()) &&
-						upgradeOptions[i].getUpgradeResult().equals(upgradeOptions[j].getUpgradeResult())) {
+				if(upgradeOptions[i].getUpgradeCard().isEqual(upgradeOptions[j].getUpgradeCard()) &&
+						upgradeOptions[i].getUpgradeResult().isEqual(upgradeOptions[j].getUpgradeResult())) {
 					upgradeOptions[i].setOptions(level, isUpgrade); 
 					j =  -1;
 				}

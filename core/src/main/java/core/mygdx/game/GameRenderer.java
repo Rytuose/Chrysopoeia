@@ -375,6 +375,20 @@ public class GameRenderer extends Stage {
 			game.changeToDeckViewer(available, true);
 			//processSymbolQueue();
 			break;
+		case DELETE:
+			LinkedList<Card> deleteable = new LinkedList<Card>();
+			deleteable.addAll(deck.getDiscard());
+			deleteable.addAll(deck.getDeck());
+			deleteable.addAll(hand.getHand().subList(1, hand.size()));
+			
+			if(deleteable.isEmpty()) {
+				processSymbolQueue();
+				return;
+			}
+			
+			startPrompt(nextSymbol);
+			game.changeToDeckViewer(deleteable, true);
+			break;
 		case UPGRADE1:
 			startUpgrade(1,true);
 			break;
@@ -419,6 +433,11 @@ public class GameRenderer extends Stage {
 		case DISCARD:
 			hand.discardCard((Card)ga);
 			GameStatus.gamestatus = GameStatus.PLAYING;
+			hand.setHand();
+			break;
+		case DELETE:
+			hand.discardCard((Card)(ga));
+			deck.delete((Card)(ga));
 			hand.setHand();
 			break;
 		case MOVE_LEFT:

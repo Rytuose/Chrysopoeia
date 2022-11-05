@@ -35,6 +35,7 @@ public enum Symbol {
 	//Effects that require prompts
 	DISCARD(-2),
 	SEARCH(-2),
+	DELETE(-2),
 	MOVE_LEFT(-2),
 	MOVE_RIGHT(-2),
 	UPGRADE1(-2),
